@@ -8,7 +8,6 @@ import { colors } from '../../../constants/colors';
 
 export const AppNavigator = () => {
   const { user } = useAuth();
-
   const isAuthenticated = !!user;
   return (
     <NavigationContainer>
