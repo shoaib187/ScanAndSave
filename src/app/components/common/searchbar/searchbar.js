@@ -1,11 +1,10 @@
 import React, { memo } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { colors } from '../../../../constants/colors';
+import { FontSize, Radius, Responsive, Spacing } from '../../../../constants/styles';
+import { Search, X } from 'lucide-react-native';
 
 // Custom Utilities
-import { useTheme } from '../../configs/themeContext/themeContext';
-import { FontSize, Radius, Responsive, Spacing } from '../../constants/styles';
-import { FONT } from '../../constants/fonts';
 
 const Searchbar = memo(({
   placeholder = "Search...",
@@ -15,24 +14,22 @@ const Searchbar = memo(({
   renderElement,
   ...props
 }) => {
-  const { theme } = useTheme();
 
   return (
     <View style={[styles.container, style]}>
       {/* Bordered Search Input Area */}
       <View style={[
         styles.searchWrapper,
-        { backgroundColor: theme.whiteColor, borderColor: theme.lightCard },
+        { borderColor: colors.border },
       ]}>
-        <Icon name="magnify" size={Responsive.width(20)} color={theme.paraColor} />
+        <Search />
 
         <TextInput
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={theme.paraColor}
-          style={[styles.searchInput, { color: theme.headingColor }]}
-          cursorColor={theme.blueColor}
+
+          style={[styles.searchInput]}
           {...props}
         />
 
@@ -42,7 +39,7 @@ const Searchbar = memo(({
             activeOpacity={0.7}
             style={styles.clearIcon}
           >
-            <Icon name="close-circle" size={Responsive.width(18)} color={theme.paraColor} />
+            <X />
           </TouchableOpacity>
         )}
       </View>
@@ -69,13 +66,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.medium,
     height: Responsive.height(40),
-    borderRadius: Radius.medium,
+    borderRadius: Radius.full,
     borderWidth: 1,
+    backgroundColor: colors.white
   },
   searchInput: {
     flex: 1,
     marginLeft: Spacing.small,
-    fontFamily: FONT.SpaceGroteskRegular,
     fontSize: FontSize.medium,
     height: '100%',
     paddingVertical: 0,

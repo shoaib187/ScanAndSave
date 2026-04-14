@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { ChevronLeft } from 'lucide-react-native';
 import { FontSize, Radius, Responsive, Spacing } from '../../../../constants/styles';
 import { colors } from '../../../../constants/colors';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Header({
   title,
@@ -13,13 +14,14 @@ export default function Header({
   showBack = false,
   wrapperStyle
 }) {
+  const navigation = useNavigation()
   return (
     <View style={[styles.headerContainer, wrapperStyle]}>
 
       {/* Left Slot */}
       <View style={styles.sideContainer}>
         {showBack ? (
-          <TouchableOpacity onPress={onLeftPress} style={styles.iconPadding}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconPadding}>
             <ChevronLeft size={Responsive.width(28)} color="#333" />
           </TouchableOpacity>
         ) : (

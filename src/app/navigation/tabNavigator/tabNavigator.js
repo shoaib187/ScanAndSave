@@ -1,11 +1,12 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Scan, History, Camera } from 'lucide-react-native';
+import { Scan, History, Camera, User } from 'lucide-react-native';
 
 // Import your custom stacks
 import { ScanStack } from '../scanStack/scanStack';
 import { ScannerStack } from '../scannerStack/scannerStack';
 import { HistoryStack } from '../historyStack/historyStack';
+import { ProfileStack } from '../profileStack/profileStack';
 
 
 const Tab = createBottomTabNavigator();
@@ -34,6 +35,9 @@ export default function TabNavigator() {
           } else if (route.name === 'History') {
             return <History color={color} size={size} />;
           }
+          else if (route.name === 'Profile') {
+            return <User color={color} size={size} />;
+          }
         },
       })}
     >
@@ -44,15 +48,14 @@ export default function TabNavigator() {
       />
 
       <Tab.Screen
-        name="Scanner"
-        component={ScannerStack}
-        options={{ tabBarLabel: 'Direct Scan' }}
-      />
-
-      <Tab.Screen
         name="History"
         component={HistoryStack}
         options={{ tabBarLabel: 'History' }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileStack}
+        options={{ tabBarLabel: 'Profile' }}
       />
     </Tab.Navigator>
   );

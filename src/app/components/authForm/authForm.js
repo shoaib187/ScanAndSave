@@ -35,10 +35,10 @@ export default function AuthForm() {
     const { email, password, fullName } = formData;
 
     // Simple Validation
-    if (!email || !password || (!isLogin && !fullName)) {
-      Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
+    // if (!email || !password || (!isLogin && !fullName)) {
+    //   Alert.alert("Error", "Please fill in all fields");
+    //   return;
+    // }
 
     setLoading(true);
     try {

@@ -41,7 +41,7 @@ export default function AuthStack() {
 
   return (
     <Stack.Navigator
-      initialRouteName={"Onboarding"}
+      initialRouteName={initialRoute}
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen name="Onboarding" component={screens.OnboardingScreen} />
