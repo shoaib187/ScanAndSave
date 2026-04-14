@@ -9,12 +9,12 @@ export default function ProfileSection() {
       {/* Header Section */}
       <View style={styles.headerContainer}>
         <Image
-          source={{ uri: 'https://images.unsplash.com/photo-1557683316-973673baf926' }}
+          source={require('../../../../../assets/png/bg.png')}
           style={styles.bannerImage}
         />
         <View style={styles.avatarWrapper}>
           <Image
-            source={{ uri: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex' }}
+            source={require('../../../../../assets/png/avatar_3.jpg')}
             style={styles.avatar}
           />
         </View>

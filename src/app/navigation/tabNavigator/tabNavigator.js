@@ -1,13 +1,12 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Scan, History, Camera, User } from 'lucide-react-native';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 // Import your custom stacks
 import { ScanStack } from '../scanStack/scanStack';
-import { ScannerStack } from '../scannerStack/scannerStack';
 import { HistoryStack } from '../historyStack/historyStack';
 import { ProfileStack } from '../profileStack/profileStack';
-
 
 const Tab = createBottomTabNavigator();
 
@@ -15,11 +14,11 @@ export default function TabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        // Hide headers on the Tab level because the Stacks have their own headers
         headerShown: false,
         tabBarActiveTintColor: '#333',
         tabBarInactiveTintColor: '#AAA',
         tabBarStyle: {
+          display: shouldShowTabBar(route) ? 'flex' : 'none',
           backgroundColor: '#FFF',
           borderTopWidth: 0,
           elevation: 10,
@@ -60,3 +59,16 @@ export default function TabNavigator() {
     </Tab.Navigator>
   );
 }
+
+const shouldShowTabBar = (route) => {
+  const routeName = getFocusedRouteNameFromRoute(route);
+  const hiddenScreens = [
+    'ScanResults',
+    'Scanner',
+    "PriceAlerts",
+    "RegionSelection",
+    "Retailers"
+  ];
+
+  return !(routeName && hiddenScreens.includes(routeName));
+};
