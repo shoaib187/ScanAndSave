@@ -16,6 +16,7 @@ export const ScanStack = () => {
       }} />
       <Stack.Screen name="ScanResults" component={screens.ScanResults} />
       <Stack.Screen name="PriceAlerts" component={screens.PriceAlerts} />
+      {/* <Stack.Screen name="Profile" component={screens.Profile} /> */}
     </Stack.Navigator>
   );
 };

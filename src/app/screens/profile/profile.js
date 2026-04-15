@@ -3,6 +3,8 @@ import {
   StyleSheet,
   Text,
   ScrollView,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { BarChart3, BellDotIcon } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,15 +13,30 @@ import ProfileSection from '../../components/profile/profileSection/profileSecti
 import PrefrencesButton from '../../components/common/prefrencesButton/prefrencesButton';
 import RetailerButton from '../../components/common/retailerButton/retailerButton';
 import NotificationButton from '../../components/common/notificationButton/notificationButton';
-import Button from '../../components/common/button/iconButton';
-import { FontSize, Spacing } from '../../../constants/styles';
+
+import { FontSize, Radius, Spacing } from '../../../constants/styles';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../../components/common/header/header';
+import { useAuth } from '../../../configs/authContext/authContext';
 
 const Profile = () => {
   const navigation = useNavigation()
+  const { logout } = useAuth()
   const [priceDrop, setPriceDrop] = useState(true);
   const [weeklyReport, setWeeklyReport] = useState(true);
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Logout', style: 'destructive', onPress: () => logout() },
+      ],
+      { cancelable: true },
+    );
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -36,7 +53,9 @@ const Profile = () => {
         <Text style={styles.sectionTitle}>Notification</Text>
         <NotificationButton onPress={() => navigation.navigate("PriceAlerts")} icon={<BellDotIcon />} title={"Price Drop"} subtitle={"Notify when prices falls"} checked={priceDrop} setChecked={setPriceDrop} />
         <NotificationButton icon={<BarChart3 />} title={"Weekly Price Report"} subtitle={"Summary of tracked items"} checked={weeklyReport} setChecked={setWeeklyReport} />
-        <Button variant='secondary' label='Logout' size='large' />
+        <TouchableOpacity onPress={handleLogout} style={styles.logout}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -54,6 +73,21 @@ const styles = StyleSheet.create({
     marginTop: Spacing.medium,
     marginBottom: Spacing.small,
     color: colors.textPrimary,
+  },
+
+  logout: {
+    marginHorizontal: Spacing.medium,
+    marginTop: Spacing.medium,
+    marginBottom: Spacing.small,
+    backgroundColor: '#FEE2E2',
+    padding: Spacing.medium,
+    borderRadius: Radius.medium,
+  },
+
+  logoutText: {
+    fontSize: FontSize.medium,
+    fontWeight: 'bold',
+    color: colors.primary,
   },
 });
 

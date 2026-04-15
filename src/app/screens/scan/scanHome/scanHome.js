@@ -12,13 +12,15 @@ import {
 import {
   Camera,
   useCameraDevice,
+  useCameraFormat,
   useCodeScanner,
+  useFrameProcessor,
 } from 'react-native-vision-camera';
 import { Easing } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontSize, Responsive, Spacing } from '../../../../constants/styles';
 import Header from '../../../components/common/header/header';
-import { UserCircle2 } from 'lucide-react-native';
+import { ClockFading, UserCircle2 } from 'lucide-react-native';
 import { colors } from '../../../../constants/colors';
 import ManualInputModal from '../../../components/common/manualInput/manualInput';
 import ScannerOverlay from '../../../components/scanHome/scannerOverlay/scannerOverlay'
@@ -29,6 +31,8 @@ export default function ScanHome({ navigation }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isActive, setIsActive] = useState(true);
   const [flash, setFlash] = useState('off');
+  const [isScanning, setIsScanning] = useState(false);
+
   const [hasPermission, setHasPermission] = useState(false);
   const [zoom, setZoom] = useState(0);
   const [cameraPosition, setCameraPosition] = useState('back'); // Track camera position
@@ -72,36 +76,57 @@ export default function ScanHome({ navigation }) {
   }, []);
 
   const codeScanner = useCodeScanner({
-    codeTypes: ['qr', 'ean-13'],
-    onCodeScanned: codes => {
-      if (codes.length > 0 && codes[0].value !== scannedData && isActive) {
-        setScannedData(codes[0].value);
+    codeTypes: ['qr', 'ean-13', 'ean-8', 'code-128'],
+    onCodeScanned: (codes) => {
+      console.log(`Scanned ${codes.length} codes!`);
+      console.log('Raw Scanner Output:', codes.map(c => ({ value: c.value, type: c.type })));
+      setIsScanning(true);
+
+      if (codes.length > 0 && codes[0].value && isActive) {
+        const scannedValue = codes[0].value;
+        console.log('Valid scan detected:', scannedValue);
+
+        setScannedData(scannedValue);
         setIsActive(false);
-        console.log('QrCode Scannned: ', codes[0].value);
-        // Simulate API call to verify employee
-        setTimeout(() => {
-          const success = Math.random() > 0.3; // 70% success rate for demo
-          handleScanResult(success, codes[0].value);
-        }, 1000);
+
+        // Don't use setTimeout for API call if you want immediate navigation
+        handleScanResult(true, scannedValue); // Test with success=true first
+        setTimeout(() => setIsScanning(false), 500);
+      } else if (codes.length > 0 && !isActive) {
+        console.log('Scanner inactive, ignoring scan');
+      } else if (codes.length > 0 && !codes[0].value) {
+        console.log('Scanned code has no value');
       }
     },
   });
 
   const handleScanResult = (success, data) => {
+    console.log('Navigating to ScanResults with:', { scannedData: data, success });
     setScanResults(data);
-    navigation.navigate('ScanResults', { scannedData: data, success });
-    setTimeout(
-      () => {
-        setScannedData(null);
-        setIsActive(true);
-      },
-      success ? 3000 : 4000,
-    );
-  };
 
+    // Add navigation error handling
+    try {
+      navigation.navigate('ScanResults', { scannedData: data, success });
+    } catch (error) {
+      console.error('Navigation error:', error);
+      Alert.alert('Error', 'Could not navigate to results screen');
+    }
+
+    setTimeout(() => {
+      setScannedData(null);
+      setIsActive(true);
+    }, success ? 3000 : 4000);
+  };
   const toggleFlash = () => {
     setFlash(flash === 'off' ? 'on' : 'off');
   };
+
+  const format = useCameraFormat(device, [
+    { videoResolution: { width: 1280, height: 720 } }, // 720p is the "Sweet spot" for QR
+    { fps: 30 }
+  ]);
+
+
 
   const toggleCamera = () => {
     // Toggle between front and back camera
@@ -149,22 +174,27 @@ export default function ScanHome({ navigation }) {
         showBack
         title={"Scan Barcode"}
         rightIcon={<UserCircle2 size={Responsive.width(24)} color="#333" strokeWidth={1.2} />}
-        wrapperStyle={{ backgroundColor: colors.background, zIndex: 9999 }}
+        // eslint-disable-next-line react-native/no-inline-styles
+        wrapperStyle={{
+          backgroundColor: colors.background,
+          zIndex: 9999
+        }}
+        onRightPress={() => navigation.navigate("Profile")}
       />
       <View style={styles.container}>
         <Camera
           ref={camera}
+          onInitialized={() => console.log("Camera initialized")}
           style={StyleSheet.absoluteFill}
           device={device}
           isActive={isActive}
           codeScanner={codeScanner}
           torch={flash}
-          enableZoomGesture={true}
+          format={format}
           zoom={zoom}
-          onZoom={zoomValue => setZoom(zoomValue)} // Handle pinch zoom gesture
+          pixelFormat="yuv"
+          onZoom={zoomValue => setZoom(zoomValue)}
         />
-
-        {/* Overlay */}
         <ScannerOverlay
           scanLineAnim={scanLineAnim}
           flash={flash}
@@ -172,7 +202,7 @@ export default function ScanHome({ navigation }) {
           toggleCamera={toggleCamera}
           toggleFlash={toggleFlash}
           zoom={zoom}
-          cameraPosition={cameraPosition} // Pass camera position to overlay
+          cameraPosition={cameraPosition}
         />
       </View>
       <TouchableOpacity activeOpacity={1} style={styles.manualEntryButton} onPress={handleManualEntry}>

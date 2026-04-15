@@ -15,7 +15,10 @@ import Header from '../../../components/common/header/header';
 export default function ScanMain({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
-      <Header rightIcon={<UserCircle2 size={Responsive.width(30)} color="#333" strokeWidth={1.2} />} />
+      <Header
+        rightIcon={<UserCircle2 size={Responsive.width(30)} color="#333" strokeWidth={1.2} />}
+        onRightPress={() => navigation.navigate('Profile')}
+      />
       <View style={styles.content}>
         <TouchableOpacity
           style={styles.scanButtonCircle}
