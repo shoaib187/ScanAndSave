@@ -24,8 +24,24 @@ import { ClockFading, UserCircle2 } from 'lucide-react-native';
 import { colors } from '../../../../constants/colors';
 import ManualInputModal from '../../../components/common/manualInput/manualInput';
 import ScannerOverlay from '../../../components/scanHome/scannerOverlay/scannerOverlay'
+import { useManualSearch, useScanBarcode } from '../../../../hooks/useScanner/useScanner';
 
 export default function ScanHome({ navigation }) {
+
+  const { mutate: scan, isPending: isScanningP, data: scanResult } = useScanBarcode();
+  const { mutate: search, isPending: isSearching, data: searchResult } = useManualSearch();
+
+  // On barcode detected
+  // scan(barcodeValue, {
+  //   onSuccess: (data) => navigation.navigate('ProductDetail', { product: data }),
+  // });
+
+  // // On search submit
+  // search(queryText, {
+  //   onSuccess: (data) => navigation.navigate('ProductDetail', { product: data }),
+  // });
+
+
   const [scanResults, setScanResults] = useState(null);
   const [scannedData, setScannedData] = useState(null);
   const [isVisible, setIsVisible] = useState(false);

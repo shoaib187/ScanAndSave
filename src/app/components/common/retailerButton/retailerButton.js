@@ -4,7 +4,7 @@ import { ChevronRight, ShoppingCart } from 'lucide-react-native';
 import { Responsive, FontSize, Spacing, Radius } from '../../../../constants/styles';
 import { colors } from '../../../../constants/colors';
 
-export default function RetailerButton({ onPress }) {
+export default function RetailerButton({ onPress, default_retailer }) {
   return (
     <TouchableOpacity onPress={onPress} style={styles.menuItem}>
       <View style={styles.menuLeft}>
@@ -12,7 +12,7 @@ export default function RetailerButton({ onPress }) {
 
         <View style={styles.menuTexts}>
           <Text style={styles.menuTitle}>Default Retailer</Text>
-          <Text style={styles.menuSub}>Amazon Prime</Text>
+          <Text style={styles.menuSub}>{default_retailer}</Text>
         </View>
       </View>
 
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
 
   menuSub: {
     fontSize: FontSize.small,
-    color: colors.textSecondary,
+    color: colors.secondary,
+    textTransform: 'capitalize'
   },
 });

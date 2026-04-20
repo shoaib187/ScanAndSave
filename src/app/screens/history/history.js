@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import HistoryCard from '../../components/common/historyCard/historyCard';
 import Favorites from '../favorites/favorites';
 import { Responsive, FontSize, Spacing, Radius } from '../../../constants/styles';
+import { useProductById, useProductPrices, useProducts } from '../../../hooks/useProducts/useProducts';
 
 const HISTORY_DATA = [
   { id: '1', title: 'Sony WH-1000XM5', subtitle: 'Scanned 2 min ago · Electronics', price: '$289', icon: Headphones },
@@ -30,6 +31,18 @@ const HISTORY_DATA = [
 
 export default function History() {
   const [activeTab, setActiveTab] = useState('Recents');
+
+  // Product list with optional filters
+  // const { data: productsData, isLoading } = useProducts({ category: 'electronics' });
+  // const products = productsData?.data || [];
+
+  // // Single product
+  // const { data: productData } = useProductById(productId);
+  // const product = productData?.data || {};
+
+  // // Product prices — shorter stale time since prices update often
+  // const { data: pricesData } = useProductPrices(productId);
+  // const prices = pricesData?.data || [];
 
   const renderHistoryItem = ({ item }) => <HistoryCard item={item} />;
 

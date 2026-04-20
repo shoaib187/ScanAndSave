@@ -12,8 +12,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AuthForm from '../../../components/authForm/authForm';
 import { colors } from '../../../../constants/colors';
 import { FontSize, Responsive, Spacing } from '../../../../constants/styles';
+import { register } from '../../../../utils/auth/api';
 
 export default function Login() {
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView

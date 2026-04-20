@@ -47,6 +47,7 @@ export default function AuthStack() {
       <Stack.Screen name="Onboarding" component={screens.OnboardingScreen} />
       <Stack.Screen name="Login" component={screens.Login} />
       <Stack.Screen name="Signup" component={screens.Signup} />
+      <Stack.Screen name="ForgotPassword" component={screens.ForgotPassword} />
     </Stack.Navigator>
   );
 }

@@ -3,8 +3,8 @@ import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Header from '../../components/common/header/header';
-import { Radius } from '../../../constants/styles';
 import RetailerCard from '../../components/common/retailerCard/retailerCard';
+import { useRetailers } from '../../../hooks/useRetailers/useRetailers';
 
 const RETAILERS = [
   {
@@ -35,6 +35,8 @@ const RETAILERS = [
 
 export default function Retailers() {
   const [selectedId, setSelectedId] = useState('amazon');
+  const { data } = useRetailers()
+  console.log("reatilers data", data);
 
   const renderItem = ({ item }) => (
     <RetailerCard

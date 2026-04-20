@@ -10,7 +10,7 @@ export const ScanStack = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Scan" component={screens.ScanMain} />
+      <Stack.Screen name="ScanHome" component={screens.ScanMain} />
       <Stack.Screen name="Scanner" component={screens.ScanHome} options={{
         animation: "slide_from_bottom",
       }} />

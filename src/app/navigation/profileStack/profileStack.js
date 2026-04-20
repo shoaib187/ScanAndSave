@@ -10,7 +10,7 @@ export const ProfileStack = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Profile" component={screens.Profile} />
+      <Stack.Screen name="ProfileHome" component={screens.Profile} />
       <Stack.Screen name="PriceAlerts" component={screens.PriceAlerts} />
       <Stack.Screen name="RegionSelection" component={screens.RegionSelection} />
       <Stack.Screen name="Retailers" component={screens.Retailers} />

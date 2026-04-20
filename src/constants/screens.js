@@ -9,6 +9,7 @@ import Profile from '../app/screens/profile/profile';
 import RegionSelection from '../app/screens/regionSelection/regionSelection';
 import Retailers from '../app/screens/retailers/retailers';
 import History from '../app/screens/history/history';
+import ForgotPassword from '../app/screens/auth/forgotPassword/forgotPassword';
 
 
 export const screens = {
@@ -22,5 +23,6 @@ export const screens = {
   Profile,
   RegionSelection,
   Retailers,
-  History
+  History,
+  ForgotPassword
 }

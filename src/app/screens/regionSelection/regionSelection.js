@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,12 +14,18 @@ import {
 import Header from '../../components/common/header/header';
 import { colors } from '../../../constants/colors';
 import { Spacing } from '../../../constants/styles';
+import { useUpdatePreferences } from '../../../hooks/usePreferences/usePreferences';
+import { useNavigation } from '@react-navigation/native';
+import { usePreferences } from '../../../hooks/usePreferences/usePreferences';
+import { getAllRegions } from '../../../utils/regions/api';
+import { useRegions } from '../../../hooks/useRegions/useRegions';
 
 const REGIONS = [
   {
     id: '1',
     currency: 'USD',
-    symbol: '$',
+    currency_symbol: '$',
+    region: 'US',
     Icon: <BadgeDollarSign />,
     title: 'United States',
     subtitle: 'US Dollar - USD - $',
@@ -27,7 +33,8 @@ const REGIONS = [
   {
     id: '2',
     currency: 'GBP',
-    symbol: '£',
+    currency_symbol: '£',
+    region: 'GB',
     Icon: <Landmark />,
     title: 'United Kingdom',
     subtitle: 'British Pound - GBP - £',
@@ -35,7 +42,8 @@ const REGIONS = [
   {
     id: '3',
     currency: 'PKR',
-    symbol: '₨',
+    currency_symbol: '₨',
+    region: 'PK',
     Icon: <ReceiptIndianRupee />,
     title: 'Pakistan',
     subtitle: 'Pakistani Rupee - PKR - ₨',
@@ -43,7 +51,8 @@ const REGIONS = [
   {
     id: '4',
     currency: 'CAD',
-    symbol: 'C$',
+    currency_symbol: 'C$',
+    region: 'CA',
     Icon: <DollarSign />,
     title: 'Canada',
     subtitle: 'Canadian Dollar - CAD - C$',
@@ -51,13 +60,41 @@ const REGIONS = [
 ];
 
 export default function RegionSelection() {
+  const navigation = useNavigation();
+
+  const { data } = useRegions()
+  const { mutate: updatePreferences, isPending } = useUpdatePreferences();
+
+  const { data: preferences } = usePreferences();
+
+  console.log("regions", data);
+
+  const currentRegion = preferences?.data?.region || preferences?.region;
+
+  const handleSelect = (item) => {
+    updatePreferences(
+      {
+        region: item.region,
+        currency: item.currency,
+        currency_symbol: item.currency_symbol,
+        default_retailer: preferences?.data?.default_retailer || preferences?.default_retailer,
+      },
+      {
+        onSuccess: () => navigation.goBack(),
+      }
+    );
+  };
+
   const renderItem = ({ item }) => (
     <PrefrencesButton
       title={item.title}
       subtitle={item.subtitle}
-      icon={item.icon}
+      icon={item.Icon}
       currency={item.currency}
-      symbol={item.symbol}
+      currency_symbol={item.currency_symbol}
+      selected={currentRegion === item.region}  // highlight active region
+      disabled={isPending}
+      onPress={() => handleSelect(item)}
       wrapperStyle={{ marginHorizontal: 0 }}
     />
   );

@@ -4,19 +4,19 @@ import { ChevronRight } from 'lucide-react-native'
 import { FontSize, Radius, Responsive, Spacing } from '../../../../constants/styles'
 import { colors } from '../../../../constants/colors'
 
-export default function PrefrencesButton({ onPress, title = "Region & Currency", subtitle = "United States - USD", icon, symbol = "$", currencyText, wrapperStyle }) {
+export default function PrefrencesButton({ onPress, default_retailer, currency = "Region & Currency", region = "United States - USD", icon, symbol = "$", currency_symbol, wrapperStyle }) {
   return (
     <TouchableOpacity onPress={onPress} style={[styles.menuItem, wrapperStyle]}>
       <View style={styles.menuLeft}>
         {icon && icon}
         {symbol && <Text style={[styles.currencyText, { fontSize: FontSize.large }]}>{symbol}</Text>}
         <View style={styles.menuTexts}>
-          <Text style={styles.menuTitle}>{title}</Text>
-          <Text style={styles.menuSub}>{subtitle}</Text>
+          <Text style={styles.menuTitle}>{"Currency & Region"}</Text>
+          <Text style={styles.menuSub}>{region}</Text>
         </View>
       </View>
       <View style={styles.menuRight}>
-        <Text style={styles.currencyText}>{currencyText}</Text>
+        <Text style={styles.currencyText}>{currency}</Text>
         <ChevronRight size={Responsive.width(22)} color="#000" />
       </View>
     </TouchableOpacity>
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
   menuSub: {
     fontSize: FontSize.small,
     color: colors.secondary,
+    textTransform: 'capitalize'
   },
 
   menuRight: {
