@@ -1,13 +1,17 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { colors } from '../../../../constants/colors';
 import { FontSize, Radius, Responsive, Spacing } from '../../../../constants/styles';
 import { ExternalLink, Tag, Barcode } from 'lucide-react-native';
+import Button from '../button/iconButton';
+import { useCreatePriceAlert } from '../../../../hooks/useAlerts/useAlerts';
+
 
 export default function ProductDetailsSheet({ item, onClose }) {
   const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ['50%', '75%'], []);
+  // const { mutate: createPriceAlert } = useCreatePriceAlert();
 
   const product = item?.product_id || {};
 
@@ -96,6 +100,7 @@ export default function ProductDetailsSheet({ item, onClose }) {
               : '—'}
           </Text>
         </View>
+
       </BottomSheetView>
     </BottomSheet>
   );

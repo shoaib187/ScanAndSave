@@ -3,7 +3,7 @@ import React from 'react';
 import { colors } from '../../../../constants/colors';
 import { FontSize, Radius, Spacing } from '../../../../constants/styles';
 
-export default function PriceBanner() {
+export default function PriceBanner({ bestPrice }) {
   return (
     <View style={styles.bestPriceBanner}>
       <View>
@@ -11,13 +11,13 @@ export default function PriceBanner() {
 
         <View style={styles.priceRow}>
           <Text style={styles.currency}>$</Text>
-          <Text style={styles.priceAmount}>279</Text>
-          <Text style={styles.priceCents}>.00</Text>
+          <Text style={styles.priceAmount}>{bestPrice}</Text>
+          {/* <Text style={styles.priceCents}>.00</Text> */}
         </View>
 
-        <Text style={styles.savingsText}>
+        {/* <Text style={styles.savingsText}>
           ↓ Save $70 vs retail
-        </Text>
+        </Text> */}
       </View>
 
       <TouchableOpacity style={styles.buyNowButton}>

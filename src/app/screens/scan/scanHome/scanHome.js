@@ -7,6 +7,7 @@ import {
   Alert,
   ActivityIndicator,
   TouchableOpacity,
+  Vibration,
 } from 'react-native';
 import {
   Camera,
@@ -98,7 +99,6 @@ export default function ScanHome({ navigation }) {
 
       scan(scannedValue, {
         onSuccess: (data) => {
-
           navigation.navigate('ScanResults', { scannedData: scannedValue, product: data, success: true });
           setTimeout(() => {
             setIsActive(true);

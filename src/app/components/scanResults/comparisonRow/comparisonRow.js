@@ -14,8 +14,8 @@ export const ComparisonRow = ({ logo, name, detail, price, isFirst }) => (
         {logo}
       </View>
       <View>
-        <Text style={styles.storeName}>{name}</Text>
-        <Text style={styles.storeDetail}>{detail}</Text>
+        <Text numberOfLines={1} style={styles.storeName}>{name}</Text>
+        <Text numberOfLines={1} style={styles.storeDetail}>{detail}</Text>
       </View>
     </View>
     <Text style={styles.storePrice}>{price}</Text>
@@ -36,18 +36,19 @@ const styles = StyleSheet.create({
   },
 
   firstComparisonRow: {
-    borderColor: colors.highlight,
+    borderColor: colors.border,
     borderWidth: 1.5,
   },
 
   rowLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
 
   logoContainer: {
-    width: Responsive.width(40),
-    height: Responsive.width(40),
+    width: Responsive.width(30),
+    height: Responsive.width(30),
     borderRadius: Radius.circle,
     justifyContent: 'center',
     alignItems: 'center',
@@ -57,17 +58,17 @@ const styles = StyleSheet.create({
   storeName: {
     fontSize: FontSize.medium,
     fontWeight: 'bold',
-    color: colors.textPrimary,
+    color: colors.primary,
   },
 
   storeDetail: {
     fontSize: FontSize.tiny,
-    color: colors.textSecondary,
+    color: colors.secondary,
   },
 
   storePrice: {
     fontSize: FontSize.medium,
     fontWeight: 'bold',
-    color: colors.textPrimary,
+    color: colors.primary,
   },
 });

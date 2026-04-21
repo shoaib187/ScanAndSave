@@ -8,6 +8,8 @@ import { useRetailers } from '../../../hooks/useRetailers/useRetailers';
 import { usePreferences } from '../../../hooks/usePreferences/usePreferences';
 import { useUpdatePreferences } from '../../../hooks/usePreferences/usePreferences';
 import { useNavigation } from '@react-navigation/native';
+import { colors } from '../../../constants/colors';
+import { FontSize, Spacing } from '../../../constants/styles';
 
 // Map slug → local icon since logo is null from API
 const RETAILER_ICONS = {
@@ -62,16 +64,21 @@ export default function Retailers() {
   return (
     <SafeAreaView style={styles.container}>
       <Header showBack title="Default Retailers" />
-      <View style={styles.content}>
-        <Text style={styles.title}>Choose Retailer</Text>
-        <FlatList
-          data={retailers}
-          keyExtractor={(item) => item._id}
-          renderItem={renderItem}
-          ListEmptyComponent={renderEmpty}
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
+      {isLoading ? <View style={styles.center}>
+        <ActivityIndicator size={40} color={colors.black} />
+        <Text>Loading...</Text>
+      </View> :
+        <View style={styles.content}>
+          <Text style={styles.title}>Choose Retailer</Text>
+          <FlatList
+            data={retailers}
+            keyExtractor={(item) => item._id}
+            renderItem={renderItem}
+            ListEmptyComponent={renderEmpty}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+      }
     </SafeAreaView>
   );
 }
@@ -82,17 +89,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#F2F1E8',
   },
   content: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingHorizontal: Spacing.medium,
+    paddingTop: Spacing.large,
   },
   title: {
-    fontSize: 18,
+    fontSize: FontSize.large,
     fontWeight: '800',
     color: '#000',
     marginBottom: 20,
   },
   center: {
-    marginTop: 20,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   errorText: {
     textAlign: 'center',

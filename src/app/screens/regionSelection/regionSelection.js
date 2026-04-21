@@ -57,15 +57,20 @@ export default function RegionSelection() {
   return (
     <SafeAreaView style={styles.container}>
       <Header showBack title={"Region & Currency"} />
-      <FlatList
-        data={regions}
-        keyExtractor={(item) => item._id}
-        ListHeaderComponent={<Searchbar />}
-        ListEmptyComponent={renderEmpty}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.list}
-      />
+      {isLoading ? <View style={styles.center}>
+        <ActivityIndicator size={40} color={colors.black} />
+        <Text>Loading...</Text>
+      </View> :
+        <FlatList
+          data={regions}
+          keyExtractor={(item) => item._id}
+          ListHeaderComponent={<Searchbar />}
+          ListEmptyComponent={renderEmpty}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.list}
+        />
+      }
     </SafeAreaView>
   );
 }
@@ -78,12 +83,15 @@ const styles = StyleSheet.create({
   list: {
     padding: Spacing.medium,
   },
-  center: {
-    marginTop: Spacing.large,
-  },
+
   errorText: {
     textAlign: 'center',
     marginTop: Spacing.large,
-    color: colors.textSecondary,
+    color: colors.secondary,
   },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });

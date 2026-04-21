@@ -32,6 +32,7 @@ export const addFavorite = async (token, product_id, signal) => {
 };
 
 export const removeFavorite = async (token, id, signal) => {
+  console.log(`Removing favorite with ID: ${id}`);
   try {
     const response = await axios.delete(
       `${baseUrl}/api/favorite/remove/${id}`,

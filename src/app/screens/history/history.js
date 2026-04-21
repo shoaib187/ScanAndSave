@@ -5,7 +5,8 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  RefreshControl
+  RefreshControl,
+  ActivityIndicator
 } from 'react-native';
 import {
   ChevronLeft,
@@ -23,12 +24,13 @@ import Favorites from '../favorites/favorites';
 import { Responsive, FontSize, Spacing, Radius } from '../../../constants/styles';
 import { useHistory } from '../../../hooks/useHistory/useHistory';
 import ProductDetailsSheet from '../../components/common/productDetailsSheet/productDetailsSheet';
+import { colors } from '../../../constants/colors';
 
 
 export default function History() {
   const [activeTab, setActiveTab] = useState('Recents')
-  const { data: history, refetch, isRefetching } = useHistory();
-  const [selectedItem, setSelectedItem] = useState(null); // ← selected history item
+  const { data: history, refetch, isRefetching, isLoading } = useHistory();
+  const [selectedItem, setSelectedItem] = useState(null);
 
 
   const historyData = history?.data || [];
@@ -36,12 +38,12 @@ export default function History() {
   const renderHistoryItem = ({ item }) => <HistoryCard
     item={item}
     onPress={() => setSelectedItem(item)}
+    isHistory={true}
   />;
 
   const handleRefresh = () => {
     refetch();
   }
-  console.log("History data:", historyData);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -80,16 +82,25 @@ export default function History() {
       </View>
 
       {/* Content */}
-
+      { }
       {activeTab === 'Recents' ? (
-        <FlatList
-          data={historyData}
-          renderItem={renderHistoryItem}
-          keyExtractor={(item) => item?._id}
-          contentContainerStyle={styles.listContent}
-          refreshControl={<RefreshControl onRefresh={handleRefresh} refreshing={isRefetching} />}
-          showsVerticalScrollIndicator={false}
-        />
+        isLoading ? (
+          <View style={styles.loading}>
+            <ActivityIndicator size={40} color={colors.primary} />
+            <Text>Loading...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={historyData}
+            renderItem={renderHistoryItem}
+            keyExtractor={(item) => item?._id}
+            contentContainerStyle={styles.listContent}
+            refreshControl={
+              <RefreshControl onRefresh={handleRefresh} refreshing={isRefetching} />
+            }
+            showsVerticalScrollIndicator={false}
+          />
+        )
       ) : (
         <Favorites />
       )}
@@ -175,4 +186,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.medium,
     paddingBottom: Spacing.large,
   },
+  loading: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  }
 });

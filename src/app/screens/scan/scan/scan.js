@@ -40,7 +40,6 @@ export default function ScanMain({ navigation }) {
           </Text>
         </View>
       </View>
-
     </SafeAreaView>
   );
 }

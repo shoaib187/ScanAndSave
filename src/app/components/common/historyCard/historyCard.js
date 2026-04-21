@@ -1,11 +1,13 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import { useDeleteHistory } from '../../../../hooks/useHistory/useHistory';
+import { useRemoveFavorite } from '../../../../hooks/useFavorites/useFavorites';
 
 
-export default function HistoryCard({ item, onPress }) {
+export default function HistoryCard({ item, onPress, isHistory }) {
   const product = item?.product_id || {};
   const { mutate: deleteHistory } = useDeleteHistory();
+  const { mutate: removeFromFavorites } = useRemoveFavorite();
 
   const name = item?.name || product?.name || "Unknown Product";
   const category = item?.category || product?.category || "Unknown Category";
@@ -17,12 +19,23 @@ export default function HistoryCard({ item, onPress }) {
       {
         text: "Delete",
         style: "destructive",
-        onPress: () => deleteHistory(item?._id, {
-          onError: (error) => {
-            console.error('Delete History Error:', error);
-            Alert.alert("Error", "Failed to delete history. Please try again.");
-          },
-        }),
+        onPress: () => {
+          if (isHistory) {
+            deleteHistory(item?._id, {
+              onError: (error) => {
+                console.error('Delete History Error:', error);
+                Alert.alert("Error", "Failed to delete history. Please try again.");
+              },
+            })
+          } else {
+            removeFromFavorites(item?.product_id?._id, {
+              onError: (error) => {
+                console.error('Remove from Favorites Error:', error);
+                Alert.alert("Error", "Failed to remove from favorites. Please try again.");
+              },
+            })
+          }
+        },
 
       }
     ]);

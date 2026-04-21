@@ -2,12 +2,25 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Radius, Spacing, FontSize, Responsive } from '../../../../constants/styles';
+import { useUpdatePriceAlert } from '../../../../hooks/useAlerts/useAlerts';
 
-export const PriceAlertCard = ({ title, currentPrice, targetInitial, daysAgo }) => {
+export const PriceAlertCard = ({ title, currentPrice, targetInitial, daysAgo, onDelete, item }) => {
   const [targetPrice, setTargetPrice] = useState(targetInitial);
+  const { mutate: updatePriceAlert } = useUpdatePriceAlert();
+
+  const handlePriceChange = (newPrice) => {
+    const rounded = Math.floor(newPrice);
+    setTargetPrice(rounded);
+    updatePriceAlert({
+      id: item?._id,
+      data: {
+        target_price: rounded,
+        preferred_retailer: item?.preferred_retailer ?? null,
+      },
+    });
+  };
 
   const diff = currentPrice - targetPrice;
-
   const diffText =
     diff > 0
       ? `Price is $${diff} above your target`
@@ -37,7 +50,8 @@ export const PriceAlertCard = ({ title, currentPrice, targetInitial, daysAgo }) 
             maximumValue={500}
             step={1}
             value={targetPrice}
-            onValueChange={(val) => setTargetPrice(Math.floor(val))}
+            onValueChange={(val) => setTargetPrice(Math.floor(val))}  // updates UI live
+            onSlidingComplete={handlePriceChange}                      // fires API once on release
             minimumTrackTintColor="#1A9B65"
             maximumTrackTintColor="#E2E2E2"
             thumbTintColor="#1A9B65"
@@ -47,18 +61,16 @@ export const PriceAlertCard = ({ title, currentPrice, targetInitial, daysAgo }) 
         <Text style={styles.diffText}>{diffText}</Text>
 
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={[styles.button, styles.deleteButton]}>
+          <TouchableOpacity onPress={onDelete} style={[styles.button, styles.deleteButton]}>
             <Text style={styles.deleteButtonText}>Delete</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.button, styles.saveButton]}>
-            <Text style={styles.saveButtonText}>Save Alerts</Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   card: {
@@ -131,7 +143,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    flex: 0.48,
+    flex: 1,
     height: Responsive.height(48),
     borderRadius: Radius.xLarge,
     justifyContent: 'center',
