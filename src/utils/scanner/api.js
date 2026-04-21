@@ -2,6 +2,7 @@ import axios from "axios";
 import { baseUrl } from "../base/api";
 
 export const scanBarcode = async (token, barcode, signal) => {
+  console.log('Scanning barcode:', barcode);
   try {
     const response = await axios.post(
       `${baseUrl}/api/scanner/scan`,
@@ -11,6 +12,7 @@ export const scanBarcode = async (token, barcode, signal) => {
         signal,
       }
     );
+    console.log("Scanned response:", response.data);
     return response.data;
   } catch (error) {
     if (axios.isCancel(error)) return;
@@ -19,6 +21,7 @@ export const scanBarcode = async (token, barcode, signal) => {
 };
 
 export const manualSearch = async (token, query, signal) => {
+  console.log("Manual Search:", query);
   try {
     const response = await axios.post(
       `${baseUrl}/api/scanner/manual-search`,

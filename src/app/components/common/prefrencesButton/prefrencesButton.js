@@ -11,12 +11,12 @@ export default function PrefrencesButton({ onPress, default_retailer, currency =
         {icon && icon}
         {symbol && <Text style={[styles.currencyText, { fontSize: FontSize.large }]}>{symbol}</Text>}
         <View style={styles.menuTexts}>
-          <Text style={styles.menuTitle}>{"Currency & Region"}</Text>
+          <Text style={styles.menuTitle}>{currency}</Text>
           <Text style={styles.menuSub}>{region}</Text>
         </View>
       </View>
       <View style={styles.menuRight}>
-        <Text style={styles.currencyText}>{currency}</Text>
+        <Text style={styles.currencyText}>{currency_symbol}</Text>
         <ChevronRight size={Responsive.width(22)} color="#000" />
       </View>
     </TouchableOpacity>

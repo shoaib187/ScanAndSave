@@ -13,15 +13,27 @@ import { X } from 'lucide-react-native';
 import { Radius, Spacing, FontSize, Responsive } from '../../../../constants/styles';
 import Button from '../button/iconButton';
 import { colors } from '../../../../constants/colors';
+import { useManualSearch } from '../../../../hooks/useScanner/useScanner';
 
 export default function ManualInputModal({ isVisible, onClose, onSubmit }) {
   const [barcode, setBarcode] = useState('');
 
+  const { mutate: manualSearch, isPending: isSearching } = useManualSearch();
+
+
   const handleHandleSubmit = () => {
     if (barcode.length > 5) {
-      onSubmit(barcode);
-      setBarcode('');
-      onClose();
+      manualSearch(barcode, {
+        onSuccess: (data) => {
+          console.log("data", data);
+          onSubmit(data);
+          onClose();
+        },
+        onError: (error) => {
+          console.error('Manual Search Error:', error);
+        },
+      });
+
     }
   };
 

@@ -1,83 +1,35 @@
-import React, { useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import React from 'react';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Searchbar from '../../components/common/searchbar/searchbar';
 import PrefrencesButton from '../../components/common/prefrencesButton/prefrencesButton';
-
-import {
-  BadgeDollarSign,
-  Landmark,
-  ReceiptIndianRupee,
-  DollarSign,
-} from 'lucide-react-native';
 import Header from '../../components/common/header/header';
 import { colors } from '../../../constants/colors';
 import { Spacing } from '../../../constants/styles';
-import { useUpdatePreferences } from '../../../hooks/usePreferences/usePreferences';
+import { useUpdatePreferences, usePreferences } from '../../../hooks/usePreferences/usePreferences';
 import { useNavigation } from '@react-navigation/native';
-import { usePreferences } from '../../../hooks/usePreferences/usePreferences';
-import { getAllRegions } from '../../../utils/regions/api';
 import { useRegions } from '../../../hooks/useRegions/useRegions';
-
-const REGIONS = [
-  {
-    id: '1',
-    currency: 'USD',
-    currency_symbol: '$',
-    region: 'US',
-    Icon: <BadgeDollarSign />,
-    title: 'United States',
-    subtitle: 'US Dollar - USD - $',
-  },
-  {
-    id: '2',
-    currency: 'GBP',
-    currency_symbol: '£',
-    region: 'GB',
-    Icon: <Landmark />,
-    title: 'United Kingdom',
-    subtitle: 'British Pound - GBP - £',
-  },
-  {
-    id: '3',
-    currency: 'PKR',
-    currency_symbol: '₨',
-    region: 'PK',
-    Icon: <ReceiptIndianRupee />,
-    title: 'Pakistan',
-    subtitle: 'Pakistani Rupee - PKR - ₨',
-  },
-  {
-    id: '4',
-    currency: 'CAD',
-    currency_symbol: 'C$',
-    region: 'CA',
-    Icon: <DollarSign />,
-    title: 'Canada',
-    subtitle: 'Canadian Dollar - CAD - C$',
-  },
-];
 
 export default function RegionSelection() {
   const navigation = useNavigation();
 
-  const { data } = useRegions()
-  const { mutate: updatePreferences, isPending } = useUpdatePreferences();
-
+  const { data: regionsData, isLoading, isError } = useRegions({
+    limit: 100
+  });
+  const { mutate: updatePreferences } = useUpdatePreferences();
   const { data: preferences } = usePreferences();
+  // console.log("preferences", preferences);
 
-  console.log("regions", data);
-
-  const currentRegion = preferences?.data?.region || preferences?.region;
+  const regions = regionsData?.data || [];
 
   const handleSelect = (item) => {
     updatePreferences(
       {
-        region: item.region,
-        currency: item.currency,
+        region: item.code,
+        currency: item.currency_code,
         currency_symbol: item.currency_symbol,
-        default_retailer: preferences?.data?.default_retailer || preferences?.default_retailer,
+        default_retailer: preferences?.data?.default_retailer,
       },
       {
         onSuccess: () => navigation.goBack(),
@@ -87,25 +39,29 @@ export default function RegionSelection() {
 
   const renderItem = ({ item }) => (
     <PrefrencesButton
-      title={item.title}
-      subtitle={item.subtitle}
-      icon={item.Icon}
-      currency={item.currency}
-      currency_symbol={item.currency_symbol}
-      selected={currentRegion === item.region}  // highlight active region
-      disabled={isPending}
+      currency_symbol={item?.currency_code}
       onPress={() => handleSelect(item)}
+      currency={item?.name}
+      region={item?.currency_name}
+      symbol={item?.currency_symbol}
       wrapperStyle={{ marginHorizontal: 0 }}
     />
   );
+
+  const renderEmpty = () => {
+    if (isLoading) return <ActivityIndicator style={styles.center} color={colors.primary} />;
+    if (isError) return <Text style={styles.errorText}>Failed to load regions.</Text>;
+    return null;
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <Header showBack title={"Region & Currency"} />
       <FlatList
-        data={REGIONS}
-        keyExtractor={(item) => item.id}
+        data={regions}
+        keyExtractor={(item) => item._id}
         ListHeaderComponent={<Searchbar />}
+        ListEmptyComponent={renderEmpty}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}
@@ -121,5 +77,13 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: Spacing.medium,
+  },
+  center: {
+    marginTop: Spacing.large,
+  },
+  errorText: {
+    textAlign: 'center',
+    marginTop: Spacing.large,
+    color: colors.textSecondary,
   },
 });

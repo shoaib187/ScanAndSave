@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
   ScrollView,
   TouchableOpacity,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { BarChart3, BellDotIcon } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,22 +22,35 @@ import { useAuth } from '../../../configs/authContext/authContext';
 import { logout as logoutApi } from '../../../utils/auth/api';
 import { useProfile } from '../../../hooks/useProfile/useProfile';
 import { usePreferences, useUpdatePreferences } from '../../../hooks/usePreferences/usePreferences';
+import { useNotifications, useUpdateNotifications } from '../../../hooks/useNotifications/useNotifications';
 
 const Profile = () => {
   const navigation = useNavigation()
   const { logout, token } = useAuth()
 
-  const { data } = useProfile()
+  const { data, refetch, isRefetching } = useProfile()
   const { data: preferences } = usePreferences()
   const { mutate: updatePreferences } = useUpdatePreferences();
+  const { mutate: updateNotifications } = useUpdateNotifications()
+  const { data: notificationsData } = useNotifications()
+
   const user = data?.data || {}
+
 
   const { currency, currency_symbol, default_retailer, region } = preferences?.data || user?.preferences || {}
 
-  // Notifications still come from user profile (no notifications API)
-  const notifications = user?.notifications || {}
-  const [priceDrop, setPriceDrop] = useState(notifications?.price_drop ?? false);
-  const [weeklyReport, setWeeklyReport] = useState(notifications?.weekly_price_report ?? false);
+
+  const [priceDrop, setPriceDrop] = useState(notificationsData?.data?.price_drop ?? false);
+  const [weeklyReport, setWeeklyReport] = useState(notificationsData?.data?.weekly_price_report ?? false);
+
+
+
+  useEffect(() => {
+    if (notificationsData?.data) {
+      setPriceDrop(notificationsData.data.price_drop ?? false);
+      setWeeklyReport(notificationsData.data.weekly_price_report ?? false);
+    }
+  }, [notificationsData]);
 
   const logoutCallback = async () => {
     const res = await logoutApi(token)
@@ -66,8 +80,8 @@ const Profile = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header showBack title={"Profile"} />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <Header user={user} showBack title={"Profile"} />
+      <ScrollView refreshControl={<RefreshControl onRefresh={refetch} refreshing={isRefetching} />} showsVerticalScrollIndicator={false}>
 
         <ProfileSection user={user} />
 
@@ -92,14 +106,36 @@ const Profile = () => {
           title={"Price Drop"}
           subtitle={"Notify when prices falls"}
           checked={priceDrop}
-          setChecked={setPriceDrop} // no API until you have a notifications endpoint
+          setChecked={(val) => {
+            setPriceDrop(val)
+            updateNotifications({ price_drop: val, weekly_price_report: weeklyReport }, {
+              onSuccess: () => {
+                console.log("Notifications updated successfully");
+              },
+              onError: (error) => {
+                console.error('Update Notifications Error:', error);
+                Alert.alert('Error', 'Failed to update notifications. Please try again.');
+              },
+            })
+          }}
         />
         <NotificationButton
           icon={<BarChart3 />}
           title={"Weekly Price Report"}
           subtitle={"Summary of tracked items"}
           checked={weeklyReport}
-          setChecked={setWeeklyReport} // same
+          setChecked={(val) => {
+            setWeeklyReport(val)
+            updateNotifications({ price_drop: priceDrop, weekly_price_report: val }, {
+              onSuccess: () => {
+                console.log("Notifications updated successfully");
+              },
+              onError: (error) => {
+                console.error('Update Notifications Error:', error);
+                Alert.alert('Error', 'Failed to update notifications. Please try again.');
+              },
+            })
+          }}
         />
 
         <TouchableOpacity onPress={handleLogout} style={styles.logout}>

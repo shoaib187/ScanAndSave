@@ -1,22 +1,26 @@
-import { FlatList, StyleSheet } from 'react-native'
+import { FlatList, RefreshControl, StyleSheet } from 'react-native'
 import React from 'react'
 import HistoryCard from '../../components/common/historyCard/historyCard';
 import { Spacing } from '../../../constants/styles';
-import { useAddFavorite, useFavorites, useRemoveFavorite } from '../../../hooks/useFavorites/useFavorites';
+import { useFavorites } from '../../../hooks/useFavorites/useFavorites';
 
-export default function Favorites({ HISTORY_DATA }) {
-  const renderHistoryItem = ({ item }) => <HistoryCard item={item} />;
-  const { data: favoritesData, isLoading } = useFavorites();
+export default function Favorites() {
+  const { data: favoritesData, isRefetching, refetch } = useFavorites();
   const favorites = favoritesData?.data || [];
-  console.log("favorites", favorites);
+  console.log("favorites are", favorites);
 
-  const { mutate: addFavorite } = useAddFavorite();
-  const { mutate: removeFavorite } = useRemoveFavorite();
+  const renderHistoryItem = ({ item }) => <HistoryCard item={item} />;
+
+  const handleRefresh = () => {
+    refetch();
+  }
+
   return (
     <FlatList
-      data={HISTORY_DATA}
+      data={favorites}
       renderItem={renderHistoryItem}
-      keyExtractor={(item) => item.id}
+      refreshControl={<RefreshControl onRefresh={handleRefresh} refreshing={isRefetching} />}
+      keyExtractor={(item) => item?._id}
       contentContainerStyle={styles.listContent}
       showsVerticalScrollIndicator={false}
     />

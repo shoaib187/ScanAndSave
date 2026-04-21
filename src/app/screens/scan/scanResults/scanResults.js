@@ -20,8 +20,16 @@ import { colors } from '../../../../constants/colors';
 import { ComparisonRow } from '../../../components/scanResults/comparisonRow/comparisonRow';
 import ProductInfo from '../../../components/scanResults/productInfo/productInfo';
 import PriceBanner from '../../../components/scanResults/priceBanner/priceBanner';
+import { useFavorites } from '../../../../hooks/useFavorites/useFavorites';
 
-export default function ScanResults({ navigation }) {
+export default function ScanResults({ navigation, route }) {
+  const { data: favorites } = useFavorites()
+  const { product } = route?.params || {};
+  const productInfo = product?.data || {};
+  const image = productInfo?.image || 'https://via.placeholder.com/300x300.png?text=No+Image';
+  const name = productInfo?.name || 'Unknown Product';
+  const category = productInfo?.category || 'Unknown Category';
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -32,13 +40,13 @@ export default function ScanResults({ navigation }) {
             <ChevronLeft color="#000" size={Responsive.width(30)} />
           </TouchableOpacity>
           <Image
-            source={require("../../../../../assets/png/headphones.png")}
+            source={{ uri: image }}
             style={styles.productImage}
             resizeMode="contain"
           />
         </View>
         <View style={styles.contentCard}>
-          <ProductInfo />
+          <ProductInfo favorites={favorites} id={productInfo?._id} name={name} category={category} />
           <PriceBanner />
           <Text style={styles.sectionTitle}>Price Comparison</Text>
 

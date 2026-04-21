@@ -25,6 +25,7 @@ import { colors } from '../../../../constants/colors';
 import ManualInputModal from '../../../components/common/manualInput/manualInput';
 import ScannerOverlay from '../../../components/scanHome/scannerOverlay/scannerOverlay'
 import { useManualSearch, useScanBarcode } from '../../../../hooks/useScanner/useScanner';
+import { s } from 'react-native-size-matters';
 
 export default function ScanHome({ navigation }) {
 
@@ -94,69 +95,52 @@ export default function ScanHome({ navigation }) {
   const codeScanner = useCodeScanner({
     codeTypes: ['qr', 'ean-13', 'ean-8', 'code-128'],
     onCodeScanned: (codes) => {
-      console.log(`Scanned ${codes.length} codes!`);
-      console.log('Raw Scanner Output:', codes.map(c => ({ value: c.value, type: c.type })));
+
+      if (!isActive) {
+        return;
+      }
+
+      if (codes.length === 0 || !codes[0].value) return;
+
+      const scannedValue = codes[0].value;
+      console.log('Valid scan detected:', scannedValue);
+
+      setIsActive(false); // disable immediately to prevent double scans
       setIsScanning(true);
 
-      if (codes.length > 0 && codes[0].value && isActive) {
-        const scannedValue = codes[0].value;
-        console.log('Valid scan detected:', scannedValue);
-
-        setScannedData(scannedValue);
-        setIsActive(false);
-
-        // Don't use setTimeout for API call if you want immediate navigation
-        handleScanResult(true, scannedValue); // Test with success=true first
-        setTimeout(() => setIsScanning(false), 500);
-      } else if (codes.length > 0 && !isActive) {
-        console.log('Scanner inactive, ignoring scan');
-      } else if (codes.length > 0 && !codes[0].value) {
-        console.log('Scanned code has no value');
-      }
+      scan(scannedValue, {
+        onSuccess: (data) => {
+          console.log('Scan API success:', data);
+          navigation.navigate('ScanResults', { scannedData: scannedValue, product: data, success: true });
+          setTimeout(() => {
+            setIsActive(true);
+            setIsScanning(false);
+          }, 3000);
+        },
+        onError: () => {
+          Alert.alert('Scan Failed', 'Could not find product. Try manual entry.');
+          setIsActive(true);
+          setIsScanning(false);
+        },
+      });
     },
   });
 
-  const handleScanResult = (success, data) => {
-    console.log('Navigating to ScanResults with:', { scannedData: data, success });
-    setScanResults(data);
 
-    // Add navigation error handling
-    try {
-      navigation.navigate('ScanResults', { scannedData: data, success });
-    } catch (error) {
-      console.error('Navigation error:', error);
-      Alert.alert('Error', 'Could not navigate to results screen');
-    }
-
-    setTimeout(() => {
-      setScannedData(null);
-      setIsActive(true);
-    }, success ? 3000 : 4000);
-  };
   const toggleFlash = () => {
     setFlash(flash === 'off' ? 'on' : 'off');
   };
 
-  const format = useCameraFormat(device, [
-    { videoResolution: { width: 1280, height: 720 } }, // 720p is the "Sweet spot" for QR
-    { fps: 30 }
-  ]);
-
-
-
   const toggleCamera = () => {
-    // Toggle between front and back camera
     const newPosition = cameraPosition === 'back' ? 'front' : 'back';
     setCameraPosition(newPosition);
-    // Reset zoom when switching cameras
     setZoom(0);
   };
 
   const handleZoom = () => {
-    // Increment zoom by 0.25, max 1, min 0
     let newZoom = zoom + 0.25;
     if (newZoom > 1) {
-      newZoom = 0; // Reset to 0 when exceeding max zoom
+      newZoom = 0;
     }
     setZoom(newZoom);
   };
@@ -206,9 +190,7 @@ export default function ScanHome({ navigation }) {
           isActive={isActive}
           codeScanner={codeScanner}
           torch={flash}
-          format={format}
           zoom={zoom}
-          pixelFormat="yuv"
           onZoom={zoomValue => setZoom(zoomValue)}
         />
         <ScannerOverlay

@@ -4,7 +4,8 @@ import {
   Text,
   View,
   TouchableOpacity,
-  FlatList
+  FlatList,
+  RefreshControl
 } from 'react-native';
 import {
   ChevronLeft,
@@ -19,7 +20,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import HistoryCard from '../../components/common/historyCard/historyCard';
 import Favorites from '../favorites/favorites';
 import { Responsive, FontSize, Spacing, Radius } from '../../../constants/styles';
-import { useProductById, useProductPrices, useProducts } from '../../../hooks/useProducts/useProducts';
+import { useHistory } from '../../../hooks/useHistory/useHistory';
 
 const HISTORY_DATA = [
   { id: '1', title: 'Sony WH-1000XM5', subtitle: 'Scanned 2 min ago · Electronics', price: '$289', icon: Headphones },
@@ -30,21 +31,17 @@ const HISTORY_DATA = [
 ];
 
 export default function History() {
-  const [activeTab, setActiveTab] = useState('Recents');
+  const [activeTab, setActiveTab] = useState('Recents')
+  const { data: history, refetch, isRefetching } = useHistory();
 
-  // Product list with optional filters
-  // const { data: productsData, isLoading } = useProducts({ category: 'electronics' });
-  // const products = productsData?.data || [];
-
-  // // Single product
-  // const { data: productData } = useProductById(productId);
-  // const product = productData?.data || {};
-
-  // // Product prices — shorter stale time since prices update often
-  // const { data: pricesData } = useProductPrices(productId);
-  // const prices = pricesData?.data || [];
+  const historyData = history?.data || [];
 
   const renderHistoryItem = ({ item }) => <HistoryCard item={item} />;
+
+  const handleRefresh = () => {
+
+    refetch();
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -83,12 +80,14 @@ export default function History() {
       </View>
 
       {/* Content */}
+
       {activeTab === 'Recents' ? (
         <FlatList
-          data={HISTORY_DATA}
+          data={historyData}
           renderItem={renderHistoryItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item?._id}
           contentContainerStyle={styles.listContent}
+          refreshControl={<RefreshControl onRefresh={handleRefresh} refreshing={isRefetching} />}
           showsVerticalScrollIndicator={false}
         />
       ) : (

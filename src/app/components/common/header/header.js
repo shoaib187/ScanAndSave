@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { ChevronLeft } from 'lucide-react-native';
 import { FontSize, Radius, Responsive, Spacing } from '../../../../constants/styles';
 import { colors } from '../../../../constants/colors';
@@ -7,12 +7,11 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function Header({
   title,
-  leftIcon,
-  onLeftPress,
   rightIcon,
   onRightPress,
   showBack = false,
-  wrapperStyle
+  wrapperStyle,
+  user
 }) {
   const navigation = useNavigation()
   return (
@@ -42,11 +41,15 @@ export default function Header({
 
       {/* Right Slot */}
       <View style={[styles.sideContainer, { alignItems: 'flex-end' }]}>
-        {rightIcon && (
-          <TouchableOpacity onPress={onRightPress} style={styles.iconPadding}>
-            {rightIcon}
-          </TouchableOpacity>
-        )}
+        {rightIcon ? (
+          user?.avatar ? (
+            <Image source={{ uri: user.avatar }} style={styles.iconPadding} />
+          ) : (
+            <TouchableOpacity onPress={onRightPress} style={styles.iconPadding}>
+              {rightIcon}
+            </TouchableOpacity>
+          )
+        ) : null}
       </View>
     </View>
   );

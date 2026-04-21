@@ -10,12 +10,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontSize, Responsive, Spacing } from '../../../../constants/styles';
 import { colors } from '../../../../constants/colors';
 import Header from '../../../components/common/header/header';
+import { useProfile } from '../../../../hooks/useProfile/useProfile';
 
 
 export default function ScanMain({ navigation }) {
+  const { data } = useProfile()
+  const user = data?.data || {}
   return (
     <SafeAreaView style={styles.container}>
       <Header
+        user={user}
         rightIcon={<UserCircle2 size={Responsive.width(30)} color="#333" strokeWidth={1.2} />}
         onRightPress={() => navigation.navigate('Profile')}
       />

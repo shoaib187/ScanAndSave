@@ -16,14 +16,13 @@ export const useProfile = () => {
 
 
 export const useUpdateProfile = () => {
-  const { token, setUser } = useAuth();
+  const { token } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data) => updateProfile(token, data),
     onSuccess: (response) => {
       if (response?.success) {
-        setUser((prev) => ({ ...prev, ...response.data }));
         queryClient.invalidateQueries({ queryKey: ['userProfile', token] });
       }
     },

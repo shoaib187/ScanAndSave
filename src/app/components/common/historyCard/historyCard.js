@@ -1,21 +1,46 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
+import { useDeleteHistory } from '../../../../hooks/useHistory/useHistory';
+
 
 export default function HistoryCard({ item }) {
-  const IconComponent = item.icon;
+  const product = item?.product_id || {};
+  const { mutate: deleteHistory } = useDeleteHistory();
+
+  const name = item?.name || product?.name || "Unknown Product";
+  const category = item?.category || product?.category || "Unknown Category";
+  const price = item?.price || product?.price || 0;
+
+  const handleDelete = () => {
+    Alert.alert("Delete History", "Are you sure you want to delete this history?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => deleteHistory(item?._id, {
+          onError: (error) => {
+            console.error('Delete History Error:', error);
+            Alert.alert("Error", "Failed to delete history. Please try again.");
+          },
+        }),
+
+      }
+    ]);
+  }
+
   return (
-    <View style={styles.card}>
+    <TouchableOpacity onLongPress={handleDelete} style={styles.card}>
       <View style={styles.cardLeft}>
-        <View style={styles.iconContainer}>
-          <IconComponent size={24} color="#000" strokeWidth={1.5} />
-        </View>
+        {/* <View style={styles.iconContainer}>
+          <IconComponent size={Responsive.width(26)} color="#000" strokeWidth={1.5} />
+        </View> */}
         <View style={styles.textContainer}>
-          <Text style={styles.itemTitle}>{item.title}</Text>
-          <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
+          <Text style={styles.itemTitle}>{name}</Text>
+          <Text numberOfLines={1} style={styles.itemSubtitle}>{category}</Text>
         </View>
       </View>
-      <Text style={styles.priceText}>{item.price}</Text>
-    </View>
+      <Text style={styles.priceText}>{price}</Text>
+    </TouchableOpacity>
   )
 }
 

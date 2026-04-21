@@ -17,8 +17,8 @@ export default function RetailerCard({ item, isSelected, onPress }) {
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={styles.retailerName}>{item.name}</Text>
-          <Text style={styles.retailerDesc}>{item.description}</Text>
+          <Text numberOfLines={1} style={styles.retailerName}>{item?.name}</Text>
+          <Text numberOfLines={1} style={styles.retailerDesc}>{item?.tagline}</Text>
         </View>
       </View>
 

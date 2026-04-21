@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { colors } from '../../../../constants/colors';
 import { FontSize, Radius, Responsive, Spacing } from '../../../../constants/styles';
 import { pickImage } from '../../../../utils/services/imagePicker/imagePicker';
@@ -15,24 +15,30 @@ export default function ProfileSection({ user }) {
 
   const [avatar, setAvatar] = useState(user?.avatar || null);
 
+  useEffect(() => {
+    if (user?.avatar) {
+      setAvatar(user.avatar);
+    }
+  }, [user?.avatar]);
+
   const handlePickImage = () => {
     pickImage(
       {},
       (image) => {
-        setAvatar(image.uri); // optimistic update
+        const file = {
+          uri: image.uri,
+          type: image.type || 'image/jpeg',
+          name: image.fileName || `avatar_${Date.now()}.jpg`,
+        };
+
+        setAvatar(image.uri);
 
         updateProfile(
-          {
-            avatar: {
-              uri: image.uri,
-              type: image.type || 'image/jpeg',
-              name: image.fileName || 'avatar.jpg',
-            },
-          },
+          { avatar: file },
           {
             onError: () => {
-              setAvatar(user?.avatar || null); // revert on failure
-              Alert.alert('Upload Failed', 'Could not upload image. Please try again.');
+              setAvatar(user?.avatar || null);
+              Alert.alert('Upload Failed', 'Could not upload image.');
             },
           }
         );
