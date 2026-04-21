@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   Animated,
   Alert,
   ActivityIndicator,
@@ -12,52 +11,41 @@ import {
 import {
   Camera,
   useCameraDevice,
-  useCameraFormat,
   useCodeScanner,
-  useFrameProcessor,
 } from 'react-native-vision-camera';
 import { Easing } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontSize, Responsive, Spacing } from '../../../../constants/styles';
 import Header from '../../../components/common/header/header';
-import { ClockFading, UserCircle2 } from 'lucide-react-native';
+import { UserCircle2 } from 'lucide-react-native';
 import { colors } from '../../../../constants/colors';
 import ManualInputModal from '../../../components/common/manualInput/manualInput';
 import ScannerOverlay from '../../../components/scanHome/scannerOverlay/scannerOverlay'
-import { useManualSearch, useScanBarcode } from '../../../../hooks/useScanner/useScanner';
-import { s } from 'react-native-size-matters';
+import { useScanBarcode } from '../../../../hooks/useScanner/useScanner';
+import ProductNotFound from '../../../components/common/productNotFound/productNotFound';
 
 export default function ScanHome({ navigation }) {
 
-  const { mutate: scan, isPending: isScanningP, data: scanResult } = useScanBarcode();
-  const { mutate: search, isPending: isSearching, data: searchResult } = useManualSearch();
-
-  // On barcode detected
-  // scan(barcodeValue, {
-  //   onSuccess: (data) => navigation.navigate('ProductDetail', { product: data }),
-  // });
-
-  // // On search submit
-  // search(queryText, {
-  //   onSuccess: (data) => navigation.navigate('ProductDetail', { product: data }),
-  // });
+  const { mutate: scan } = useScanBarcode();
 
 
-  const [scanResults, setScanResults] = useState(null);
-  const [scannedData, setScannedData] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isActive, setIsActive] = useState(true);
   const [flash, setFlash] = useState('off');
-  const [isScanning, setIsScanning] = useState(false);
+
+
+  const [notFoundVisible, setNotFoundVisible] = useState(false);
+  const [lastBarcode, setLastBarcode] = useState(null);
+
+
 
   const [hasPermission, setHasPermission] = useState(false);
   const [zoom, setZoom] = useState(0);
-  const [cameraPosition, setCameraPosition] = useState('back'); // Track camera position
-  const device = useCameraDevice(cameraPosition); // Use cameraPosition state
+  const [cameraPosition, setCameraPosition] = useState('back');
+  const device = useCameraDevice(cameraPosition);
   const camera = useRef(null);
   const scanLineAnim = useRef(new Animated.Value(0)).current;
 
-  // Scan line animation
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
@@ -75,6 +63,7 @@ export default function ScanHome({ navigation }) {
         }),
       ]),
     ).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Request camera permission
@@ -103,24 +92,21 @@ export default function ScanHome({ navigation }) {
       if (codes.length === 0 || !codes[0].value) return;
 
       const scannedValue = codes[0].value;
-      console.log('Valid scan detected:', scannedValue);
 
-      setIsActive(false); // disable immediately to prevent double scans
-      setIsScanning(true);
+      setIsActive(false);
+      setLastBarcode(scannedValue);
 
       scan(scannedValue, {
         onSuccess: (data) => {
-          console.log('Scan API success:', data);
+
           navigation.navigate('ScanResults', { scannedData: scannedValue, product: data, success: true });
           setTimeout(() => {
             setIsActive(true);
-            setIsScanning(false);
           }, 3000);
         },
         onError: () => {
-          Alert.alert('Scan Failed', 'Could not find product. Try manual entry.');
           setIsActive(true);
-          setIsScanning(false);
+          setNotFoundVisible(true);
         },
       });
     },
@@ -137,13 +123,7 @@ export default function ScanHome({ navigation }) {
     setZoom(0);
   };
 
-  const handleZoom = () => {
-    let newZoom = zoom + 0.25;
-    if (newZoom > 1) {
-      newZoom = 0;
-    }
-    setZoom(newZoom);
-  };
+
 
   const handleManualEntry = () => {
     setIsVisible(true);
@@ -196,7 +176,6 @@ export default function ScanHome({ navigation }) {
         <ScannerOverlay
           scanLineAnim={scanLineAnim}
           flash={flash}
-          handleZoom={handleZoom}
           toggleCamera={toggleCamera}
           toggleFlash={toggleFlash}
           zoom={zoom}
@@ -206,7 +185,27 @@ export default function ScanHome({ navigation }) {
       <TouchableOpacity activeOpacity={1} style={styles.manualEntryButton} onPress={handleManualEntry}>
         <Text style={styles.manualEntryText}>Can't Scan? Enter code manually →</Text>
       </TouchableOpacity>
-      <ManualInputModal isVisible={isVisible} onClose={() => setIsVisible(false)} />
+
+      <ManualInputModal
+        onNotFound={(barcode) => {
+          setLastBarcode(barcode);
+          setNotFoundVisible(true);
+        }}
+        isVisible={isVisible} onClose={() => setIsVisible(false)} />
+
+      <ProductNotFound
+        visible={notFoundVisible}
+        barcode={lastBarcode}
+        onClose={() => {
+          setNotFoundVisible(false);
+          setIsActive(true);
+        }}
+        onManualEntry={() => {
+          setNotFoundVisible(false);
+          setIsVisible(true);
+        }}
+      />
+
     </SafeAreaView>
   );
 }

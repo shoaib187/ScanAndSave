@@ -23,7 +23,6 @@ export const useProductById = (id) => {
     staleTime: 1000 * 60 * 5,
   });
 };
-
 export const useProductPrices = (id) => {
   const { token } = useAuth();
 
@@ -31,6 +30,12 @@ export const useProductPrices = (id) => {
     queryKey: ['productPrices', token, id],
     queryFn: ({ signal }) => getProductPrices(token, id, signal),
     enabled: !!token && !!id,
-    staleTime: 1000 * 60 * 2, // 2 minutes — prices change more frequently
+    staleTime: 0,
+    refetchInterval: (query) => {
+      const status = query.state.data?.prices_status;
+      if (status === 'ready') return false;
+      return 6000;
+    },
+    refetchIntervalInBackground: false,
   });
 };

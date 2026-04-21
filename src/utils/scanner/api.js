@@ -13,15 +13,19 @@ export const scanBarcode = async (token, barcode, signal) => {
       }
     );
     console.log("Scanned response:", response.data);
+
+    // ← Add this — throws so useMutation's onError fires
+    if (!response.data?.success) {
+      throw response.data;
+    }
+
     return response.data;
   } catch (error) {
     if (axios.isCancel(error)) return;
-    throw error.response ? error.response.data : new Error('Network Error');
+    throw error.response ? error.response.data : error;
   }
 };
-
 export const manualSearch = async (token, query, signal) => {
-  console.log("Manual Search:", query);
   try {
     const response = await axios.post(
       `${baseUrl}/api/scanner/manual-search`,
@@ -31,9 +35,14 @@ export const manualSearch = async (token, query, signal) => {
         signal,
       }
     );
+
+    if (!response.data?.success) {
+      throw response.data;
+    }
+
     return response.data;
   } catch (error) {
     if (axios.isCancel(error)) return;
-    throw error.response ? error.response.data : new Error('Network Error');
+    throw error.response ? error.response.data : error;
   }
 };

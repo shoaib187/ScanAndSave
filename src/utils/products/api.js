@@ -29,6 +29,7 @@ export const getProductById = async (token, id, signal) => {
 };
 
 export const getProductPrices = async (token, id, signal) => {
+  console.log(id);
   try {
     const response = await axios.get(`${baseUrl}/api/product/prices/${id}`, {
       headers: { Authorization: `Bearer ${token}` },

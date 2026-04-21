@@ -15,33 +15,33 @@ import {
   Gamepad2,
   Lightbulb
 } from 'lucide-react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import HistoryCard from '../../components/common/historyCard/historyCard';
 import Favorites from '../favorites/favorites';
 import { Responsive, FontSize, Spacing, Radius } from '../../../constants/styles';
 import { useHistory } from '../../../hooks/useHistory/useHistory';
+import ProductDetailsSheet from '../../components/common/productDetailsSheet/productDetailsSheet';
 
-const HISTORY_DATA = [
-  { id: '1', title: 'Sony WH-1000XM5', subtitle: 'Scanned 2 min ago · Electronics', price: '$289', icon: Headphones },
-  { id: '2', title: 'Apple Watch Series 9', subtitle: 'Yesterday · Wearables', price: '$329', icon: Watch },
-  { id: '3', title: 'Canon EOS R50', subtitle: '3 days ago · Cameras', price: '$679', icon: Camera },
-  { id: '4', title: 'PS5 DualSense Controller', subtitle: 'Last week · Gaming', price: '$59', icon: Gamepad2 },
-  { id: '5', title: 'Philips Hue Starter Kit', subtitle: '2 weeks ago · Smart Home', price: '$189', icon: Lightbulb },
-];
 
 export default function History() {
   const [activeTab, setActiveTab] = useState('Recents')
   const { data: history, refetch, isRefetching } = useHistory();
+  const [selectedItem, setSelectedItem] = useState(null); // ← selected history item
+
 
   const historyData = history?.data || [];
 
-  const renderHistoryItem = ({ item }) => <HistoryCard item={item} />;
+  const renderHistoryItem = ({ item }) => <HistoryCard
+    item={item}
+    onPress={() => setSelectedItem(item)}
+  />;
 
   const handleRefresh = () => {
-
     refetch();
   }
+  console.log("History data:", historyData);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -91,9 +91,14 @@ export default function History() {
           showsVerticalScrollIndicator={false}
         />
       ) : (
-        <Favorites HISTORY_DATA={HISTORY_DATA} />
+        <Favorites />
       )}
-
+      {selectedItem && (
+        <ProductDetailsSheet
+          item={selectedItem}
+          onClose={() => setSelectedItem(null)}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -108,14 +113,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.medium,
-    paddingTop: Spacing.small,
+    // paddingTop: Spacing.small,
     marginBottom: Spacing.large,
+    height: Responsive.height(50),
   },
 
   backButton: {
     backgroundColor: '#FFF',
-    width: Responsive.width(45),
-    height: Responsive.width(45),
+    width: Responsive.width(40),
+    height: Responsive.width(40),
     borderRadius: Radius.circle,
     justifyContent: 'center',
     alignItems: 'center',

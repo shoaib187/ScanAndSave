@@ -6,6 +6,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {
   ChevronLeft,
@@ -21,11 +22,23 @@ import { ComparisonRow } from '../../../components/scanResults/comparisonRow/com
 import ProductInfo from '../../../components/scanResults/productInfo/productInfo';
 import PriceBanner from '../../../components/scanResults/priceBanner/priceBanner';
 import { useFavorites } from '../../../../hooks/useFavorites/useFavorites';
+import { useProductPrices } from '../../../../hooks/useProducts/useProducts';
 
 export default function ScanResults({ navigation, route }) {
   const { data: favorites } = useFavorites()
+
   const { product } = route?.params || {};
-  const productInfo = product?.data || {};
+  const productId = product?.data?._id
+  // console.log("Product id is:", productId);
+  const { data: pricesData, isFetching: isPricesFetching } = useProductPrices(productId);
+
+  const prices = pricesData?.data?.prices || [];
+  const pricesStatus = pricesData?.prices_status;
+  const isPricesReady = pricesStatus === 'ready';
+
+
+  console.log("productPrices in scan results", prices);
+  const productInfo = product?.data[0] || product?.data || {};
   const image = productInfo?.image || 'https://via.placeholder.com/300x300.png?text=No+Image';
   const name = productInfo?.name || 'Unknown Product';
   const category = productInfo?.category || 'Unknown Category';
@@ -48,7 +61,34 @@ export default function ScanResults({ navigation, route }) {
         <View style={styles.contentCard}>
           <ProductInfo favorites={favorites} id={productInfo?._id} name={name} category={category} />
           <PriceBanner />
+
+
           <Text style={styles.sectionTitle}>Price Comparison</Text>
+
+          {!isPricesReady ? (
+            <View style={styles.pricesLoading}>
+              <ActivityIndicator size="small" color={colors.primary} />
+              <Text style={styles.pricesLoadingText}>
+                {pricesStatus === 'unavailable'
+                  ? 'Fetching prices...'
+                  : 'Loading price comparison...'}
+              </Text>
+            </View>
+          ) : (
+            <>
+              {/* {prices.map((price, index) => (
+                <ComparisonRow
+                  key={price._id || index}
+                  name={price.retailer}
+                  detail={price.detail || ''}
+                  price={price.price ? `$${price.price}` : '—'}
+                  isFirst={index === 0}
+                  logo={<ShoppingCart size={20} color={colors.textPrimary} />}
+                />
+              ))} */}
+            </>
+          )}
+
 
           <ComparisonRow
             name="Amazon"

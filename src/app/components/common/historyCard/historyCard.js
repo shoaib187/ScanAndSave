@@ -3,7 +3,7 @@ import React from 'react'
 import { useDeleteHistory } from '../../../../hooks/useHistory/useHistory';
 
 
-export default function HistoryCard({ item }) {
+export default function HistoryCard({ item, onPress }) {
   const product = item?.product_id || {};
   const { mutate: deleteHistory } = useDeleteHistory();
 
@@ -29,7 +29,7 @@ export default function HistoryCard({ item }) {
   }
 
   return (
-    <TouchableOpacity onLongPress={handleDelete} style={styles.card}>
+    <TouchableOpacity onPress={onPress} onLongPress={handleDelete} style={styles.card}>
       <View style={styles.cardLeft}>
         {/* <View style={styles.iconContainer}>
           <IconComponent size={Responsive.width(26)} color="#000" strokeWidth={1.5} />

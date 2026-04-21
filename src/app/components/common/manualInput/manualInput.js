@@ -9,13 +9,15 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { X } from 'lucide-react-native';
+import { Navigation, X } from 'lucide-react-native';
 import { Radius, Spacing, FontSize, Responsive } from '../../../../constants/styles';
 import Button from '../button/iconButton';
 import { colors } from '../../../../constants/colors';
 import { useManualSearch } from '../../../../hooks/useScanner/useScanner';
+import { useNavigation } from '@react-navigation/native';
 
-export default function ManualInputModal({ isVisible, onClose, onSubmit }) {
+export default function ManualInputModal({ isVisible, onClose, onNotFound }) {
+  const navigation = useNavigation()
   const [barcode, setBarcode] = useState('');
 
   const { mutate: manualSearch, isPending: isSearching } = useManualSearch();
@@ -25,15 +27,15 @@ export default function ManualInputModal({ isVisible, onClose, onSubmit }) {
     if (barcode.length > 5) {
       manualSearch(barcode, {
         onSuccess: (data) => {
-          console.log("data", data);
-          onSubmit(data);
           onClose();
+          navigation.navigate("ScanResults", { product: data, success: true });
         },
         onError: (error) => {
           console.error('Manual Search Error:', error);
+          onClose();             // close the input modal first
+          onNotFound?.(barcode); // then show not found dialog with the barcode
         },
       });
-
     }
   };
 
@@ -80,6 +82,7 @@ export default function ManualInputModal({ isVisible, onClose, onSubmit }) {
               disabled={barcode.length < 5}
               size='large'
               variant='secondary'
+              loading={isSearching}
               style={{ marginTop: Spacing.medium, borderRadius: Radius.full }}
             />
           </View>

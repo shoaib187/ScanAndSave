@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 60,
+    height: Responsive.height(50),
     paddingHorizontal: Spacing.medium,
     backgroundColor: 'transparent',
     width: '100%',
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: FontSize.large,
     fontWeight: '700',
     color: '#000',
   },

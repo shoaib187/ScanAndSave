@@ -5,12 +5,13 @@ import { colors } from '../../../../constants/colors';
 import { Spacing } from '../../../../constants/styles';
 import Header from '../../../components/common/header/header';
 import { PriceAlertCard } from '../../../components/priceAlert/priceAlertcard/priceAlertCard';
-import { usePriceAlerts } from '../../../../hooks/useAlerts/useAlerts';
+
+import { useProducts } from '../../../../hooks/useProducts/useProducts';
 
 
 export default function PriceAlerts() {
-  const { data } = usePriceAlerts()
-  console.log("data", data);
+  const { data: products } = useProducts()
+
   return (
     <SafeAreaView style={styles.container}>
       <Header showBack title={"Price alerts"} />
