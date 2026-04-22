@@ -30,11 +30,16 @@ export default function AuthStack() {
     checkOnboarding();
   }, []);
 
-  // Show a spinner while checking the storage
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#EFEFE6' }}>
-        <ActivityIndicator size="large" color="#333" />
+      // eslint-disable-next-line react-native/no-inline-styles
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#EFEFE6'
+      }}>
+        <ActivityIndicator size="large" color={"#333"} />
       </View>
     );
   }

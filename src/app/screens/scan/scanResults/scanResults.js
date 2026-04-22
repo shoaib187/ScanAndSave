@@ -131,8 +131,6 @@ export default function ScanResults({ navigation, route }) {
   const { data: favorites } = useFavorites();
 
   const { product } = route?.params || {};
-  const productId = product?.data?._id;
-  const { data: pricesData, isFetching: isPricesFetching } = useProductPrices(productId);
 
 
   const productInfo = product?.data[0] || product?.data || {};
@@ -146,10 +144,6 @@ export default function ScanResults({ navigation, route }) {
     .sort((a, b) => a.price - b.price);
 
   const best_price = productInfo?.best_price;
-  // const lowest_price = productInfo?.lowest_price;
-  // const lowest_retailer = productInfo?.lowest_retailer;
-  // const lowest_retailer_price = productInfo?.lowest_retailer_price;
-  // const lowest_retailer_url = productInfo?.lowest_retailer_url;
 
   const visiblePrices = showAll ? allPrices : allPrices.slice(0, 5);
 
@@ -176,45 +170,43 @@ export default function ScanResults({ navigation, route }) {
 
         <View style={styles.contentCard}>
           <ProductInfo favorites={favorites} id={productInfo?._id} name={name} category={category} />
-          <PriceBanner bestPrice={best_price} bestRetailer={allPrices[0]?.retailer_name} />
+          <PriceBanner url={productInfo?.retailer_prices[0]?.url} bestPrice={best_price} bestRetailer={allPrices[0]?.retailer_name} />
 
-          <Text style={styles.sectionTitle}>Price Comparison</Text>
+          {visiblePrices?.length > 0 &&
+            <Text style={styles.sectionTitle}>Price Comparison</Text>
+          }
 
-          {isPricesFetching && !allPrices?.length ? (
-            <View style={styles.pricesLoading}>
-              <ActivityIndicator size="small" color={colors.primary} />
-              <Text style={styles.pricesLoadingText}>Loading price comparison...</Text>
-            </View>
-          ) : (
-            <>
-              {visiblePrices?.map((price, index) => (
-                <ComparisonRow
-                  key={`${price.retailer_slug}-${index}`}
-                  name={price.retailer_name}
-                  detail={[
-                    price.availability === 'in_stock' ? 'In stock' : 'Out of stock',
-                    price.shipping_info,
-                    price.original_price ? `Was $${price.original_price.toFixed(2)}` : null,
-                  ].filter(Boolean).join(' · ')}
-                  price={`$${price.price.toFixed(2)}`}
-                  isFirst={index === 0}
-                  logo={getIcon(price.retailer_slug)}
-                />
-              ))}
+          {!visiblePrices?.length && (
+            <Text style={styles.pricesLoadingText}>
+              No price data available for this product.
+            </Text>
+          )}
 
-              {allPrices?.length > 5 && (
-                <TouchableOpacity
-                  style={styles.viewAllButton}
-                  onPress={() => setShowAll(prev => !prev)}
-                >
-                  <Text style={styles.viewAllText}>
-                    {showAll
-                      ? 'Show less'
-                      : `View all ${allPrices.length} stores`}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </>
+          {visiblePrices?.map((price, index) => (
+            <ComparisonRow
+              key={`${price.retailer_slug}-${index}`}
+              name={price.retailer_name}
+              detail={[
+                price.availability === 'in_stock' ? 'In stock' : 'Out of stock',
+                price.shipping_info,
+                price.original_price ? `Was $${price.original_price.toFixed(2)}` : null,
+              ].filter(Boolean).join(' · ')}
+              price={`$${price.price.toFixed(2)}`}
+              isFirst={index === 0}
+              logo={getIcon(price.retailer_slug)}
+            />
+          ))}
+          {allPrices?.length > 5 && (
+            <TouchableOpacity
+              style={styles.viewAllButton}
+              onPress={() => setShowAll(prev => !prev)}
+            >
+              <Text style={styles.viewAllText}>
+                {showAll
+                  ? 'Show less'
+                  : `View all ${allPrices.length} stores`}
+              </Text>
+            </TouchableOpacity>
           )}
         </View>
       </ScrollView>
@@ -297,4 +289,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.medium,
     color: colors.textPrimary,
   },
+  pricesLoadingText: {
+    textAlign: 'center'
+  }
 });

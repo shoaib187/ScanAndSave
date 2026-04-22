@@ -73,7 +73,7 @@ export default function ProductInfo({ name, description, category, id, favorites
             fill={isFavorited ? 'red' : 'transparent'}
           />
         </TouchableOpacity>
-        <Bookmark size={Responsive.width(22)} color={colors.textPrimary} />
+        {/* <Bookmark size={Responsive.width(22)} color={colors.textPrimary} /> */}
         <TouchableOpacity onPress={handleShare}>
           <Share2 size={Responsive.width(22)} color={colors.textPrimary} />
         </TouchableOpacity>

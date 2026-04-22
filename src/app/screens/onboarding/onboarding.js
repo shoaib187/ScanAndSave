@@ -67,6 +67,48 @@ const Pagination = ({ data, x, screenWidth }) => {
   );
 };
 
+
+const AnimatedItem = ({ item, index, x, screenWidth }) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    // We scale from 0.8 to 1 and back to 0.8
+    const scale = interpolate(
+      x.value,
+      [(index - 1) * screenWidth, index * screenWidth, (index + 1) * screenWidth],
+      [0.6, 1, 0.6],
+      Extrapolate.CLAMP
+    );
+
+    // Optional: Add opacity fade for a smoother transition
+    const opacity = interpolate(
+      x.value,
+      [(index - 1) * screenWidth, index * screenWidth, (index + 1) * screenWidth],
+      [0.4, 1, 0.4],
+      Extrapolate.CLAMP
+    );
+
+    return {
+      transform: [{ scale }],
+      opacity,
+    };
+  });
+
+  return (
+    <Animated.View style={[styles.itemContainer, { width: screenWidth }, animatedStyle]}>
+      <View style={styles.imageContainer}>
+        <Image
+          source={item.image}
+          style={styles.mainImage}
+          resizeMode="contain"
+        />
+      </View>
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.description}>{item.description}</Text>
+      </View>
+    </Animated.View>
+  );
+};
+
 export default function OnboardingScreen({ navigation }) {
   const { width: SCREEN_WIDTH } = useWindowDimensions();
   const flatListRef = useRef(null);
@@ -84,12 +126,9 @@ export default function OnboardingScreen({ navigation }) {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
     } else {
       try {
-        // --- KEYCHAIN INSTEAD OF ASYNCSTORAGE ---
-        // We store 'true' as the password for the key 'onboarding_status'
         await Keychain.setGenericPassword('onboarding_status', 'completed', {
           service: 'com.scanandsave.onboarding',
         });
-
         navigation.replace('Login');
       } catch (error) {
         console.log("Keychain could not save onboarding status", error);
@@ -103,20 +142,14 @@ export default function OnboardingScreen({ navigation }) {
     }
   }).current;
 
-  const renderItem = ({ item }) => (
-    <View style={[styles.itemContainer, { width: SCREEN_WIDTH }]}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={item.image}
-          style={styles.mainImage}
-          resizeMode="contain"
-        />
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-      </View>
-    </View>
+  // 2. Updated renderItem to use the AnimatedItem component
+  const renderItem = ({ item, index }) => (
+    <AnimatedItem
+      item={item}
+      index={index}
+      x={x}
+      screenWidth={SCREEN_WIDTH}
+    />
   );
 
   const isLastPage = currentIndex === DATA.length - 1;

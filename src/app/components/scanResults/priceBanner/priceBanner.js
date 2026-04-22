@@ -1,9 +1,14 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import React from 'react';
 import { colors } from '../../../../constants/colors';
 import { FontSize, Radius, Spacing } from '../../../../constants/styles';
 
-export default function PriceBanner({ bestPrice }) {
+export default function PriceBanner({ bestPrice, url }) {
+  const openUrl = () => {
+    if (url) {
+      Linking.openURL(url).catch(err => console.error("Failed to open URL:", err));
+    }
+  }
   return (
     <View style={styles.bestPriceBanner}>
       <View>
@@ -11,7 +16,7 @@ export default function PriceBanner({ bestPrice }) {
 
         <View style={styles.priceRow}>
           <Text style={styles.currency}>$</Text>
-          <Text style={styles.priceAmount}>{bestPrice}</Text>
+          <Text style={styles.priceAmount}>{bestPrice || "N/A"}</Text>
           {/* <Text style={styles.priceCents}>.00</Text> */}
         </View>
 
@@ -20,7 +25,7 @@ export default function PriceBanner({ bestPrice }) {
         </Text> */}
       </View>
 
-      <TouchableOpacity style={styles.buyNowButton}>
+      <TouchableOpacity onPress={openUrl} style={styles.buyNowButton}>
         <Text style={styles.buyNowText}>Buy Now</Text>
       </TouchableOpacity>
     </View>
