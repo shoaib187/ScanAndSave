@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+// import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Radius, Spacing } from '../../../constants/styles';
 import { colors } from '../../../constants/colors';
 import InputField from '../common/inputField/inputField';
@@ -7,10 +8,12 @@ import Button from '../common/button/iconButton';
 import { useAuth } from '../../../configs/authContext/authContext';
 import { register, login as loginApi } from '../../../utils/auth/api';
 import { useNavigation } from '@react-navigation/native';
+import { CheckCircle, Eye, EyeClosed, User2 } from 'lucide-react-native';
 
 export default function AuthForm() {
   const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation()
 
   const [form, setForm] = useState({
@@ -36,6 +39,7 @@ export default function AuthForm() {
       password: '',
       terms_accepted: true,
     });
+    setShowPassword(false);
   };
 
   // Submit
@@ -58,7 +62,6 @@ export default function AuthForm() {
         response = await register(full_name, email, password, true);
       }
 
-      // console.log("Auth Response:", response);
       const user = response?.data;
       const token = response?.data?.token;
 
@@ -90,14 +93,21 @@ export default function AuthForm() {
         autoCapitalize="none"
         value={form.email}
         onChangeText={(val) => handleInputChange('email', val)}
+        leftIconName="email-outline"
+        rightElement={form.email ? (form.email.includes('@') && form.email.includes('.')) ? <CheckCircle size={18} color={colors.success} /> : <Text style={{ color: colors.error, fontSize: 12 }}>Invalid</Text> : null}
+        showError
       />
 
       <InputField
         label="Password"
         placeholder="Enter password"
-        secureTextEntry
+        secureTextEntry={!showPassword}
         value={form.password}
         onChangeText={(val) => handleInputChange('password', val)}
+        leftIconName="lock-outline"
+        rightIconName={showPassword ? "eye-off-outline" : "eye-outline"}
+        showError={false}
+        rightElement={showPassword ? <Eye size={18} onPress={() => setShowPassword(!showPassword)} /> : <EyeClosed size={18} onPress={() => setShowPassword(!showPassword)} />}
       />
 
       {isLogin && (

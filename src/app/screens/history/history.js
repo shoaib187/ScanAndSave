@@ -10,11 +10,6 @@ import {
 } from 'react-native';
 import {
   ChevronLeft,
-  Headphones,
-  Watch,
-  Camera,
-  Gamepad2,
-  Lightbulb
 } from 'lucide-react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,7 +22,7 @@ import ProductDetailsSheet from '../../components/common/productDetailsSheet/pro
 import { colors } from '../../../constants/colors';
 
 
-export default function History() {
+export default function History({ navigation }) {
   const [activeTab, setActiveTab] = useState('Recents')
   const { data: history, refetch, isRefetching, isLoading } = useHistory();
   const [selectedItem, setSelectedItem] = useState(null);
@@ -50,7 +45,7 @@ export default function History() {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <ChevronLeft size={Responsive.width(28)} color="#000" />
         </TouchableOpacity>
 

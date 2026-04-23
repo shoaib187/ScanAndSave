@@ -43,7 +43,9 @@ export default function Header({
       <View style={[styles.sideContainer, { alignItems: 'flex-end' }]}>
         {rightIcon ? (
           user?.avatar ? (
-            <Image source={{ uri: user.avatar }} style={styles.iconPadding} />
+            <TouchableOpacity onPress={onRightPress}>
+              <Image source={{ uri: user.avatar }} style={styles.iconPadding} />
+            </TouchableOpacity>
           ) : (
             <TouchableOpacity onPress={onRightPress} style={styles.iconPadding}>
               {rightIcon}

@@ -68,9 +68,9 @@ export default function ProfileSection({ user }) {
               </Text>
             </View>
           )}
-          <View style={[styles.editBadge, isPending && { opacity: 0.5 }]}>
+          <TouchableOpacity onPress={handlePickImage} style={[styles.editBadge, isPending && { opacity: 0.5 }]}>
             <Pencil size={12} color="#fff" />
-          </View>
+          </TouchableOpacity>
         </TouchableOpacity>
       </View>
 

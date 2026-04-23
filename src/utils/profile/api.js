@@ -53,7 +53,7 @@ export const updateProfile = async (token, { full_name, avatar }) => {
     );
 
     const status = response.info().status;
-    const raw = response.data;abhi 
+    const raw = response.data;
 
     let resData = {};
     try {

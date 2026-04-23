@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Vibration,
+  Linking,
 } from 'react-native';
 import {
   Camera,
@@ -82,27 +83,90 @@ export default function ScanHome({ navigation }) {
     requestPermission();
   }, []);
 
+  // const codeScanner = useCodeScanner({
+  //   codeTypes: ['qr', 'ean-13', 'ean-8', 'code-128'],
+  //   onCodeScanned: (codes) => {
+
+  //     if (!isActive) {
+  //       return;
+  //     }
+
+  //     if (codes.length === 0 || !codes[0].value) return;
+
+  //     const scannedValue = codes[0].value;
+
+  //     setIsActive(false);
+  //     setLastBarcode(scannedValue);
+
+  //     scan(scannedValue, {
+  //       onSuccess: (data) => {
+  //         navigation.navigate('ScanResults', { scannedData: scannedValue, product: data, success: true });
+  //         setTimeout(() => {
+  //           setIsActive(true);
+  //         }, 3000);
+  //       },
+  //       onError: () => {
+  //         setIsActive(true);
+  //         setNotFoundVisible(true);
+  //       },
+  //     });
+  //   },
+  // });
+
+
+
   const codeScanner = useCodeScanner({
-    codeTypes: ['qr', 'ean-13', 'ean-8', 'code-128'],
+    codeTypes: ['qr', 'ean-13', 'ean-8', 'code-128', 'code-39', 'code-93', 'codabar', 'itf', 'upc-e', 'upc-a'],
     onCodeScanned: (codes) => {
-
-      if (!isActive) {
-        return;
-      }
-
+      if (!isActive) return;
       if (codes.length === 0 || !codes[0].value) return;
 
       const scannedValue = codes[0].value;
 
+      // Check if it's a QR code (usually contains URLs or text)
+      const isQRCode = codes[0].type === 'qr';
+
+      // For QR codes, you might want to handle differently
+      if (isQRCode) {
+        // Check if QR contains a URL
+        const isURL = scannedValue.match(/^(http|https):\/\/[^ "]+$/);
+
+        if (isURL) {
+          // Handle URL QR code
+          Alert.alert(
+            'QR Code Scanned',
+            `Open this link?\n${scannedValue}`,
+            [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Open',
+                onPress: () => {
+                  // Open URL in browser
+                  Linking.openURL(scannedValue);
+                  setIsActive(true);
+                }
+              }
+            ]
+          );
+          setIsActive(false);
+          setTimeout(() => setIsActive(true), 3000);
+          return;
+        }
+      }
+
+      // Handle as regular product barcode
       setIsActive(false);
       setLastBarcode(scannedValue);
 
       scan(scannedValue, {
         onSuccess: (data) => {
-          navigation.navigate('ScanResults', { scannedData: scannedValue, product: data, success: true });
-          setTimeout(() => {
-            setIsActive(true);
-          }, 3000);
+          navigation.navigate('ScanResults', {
+            scannedData: scannedValue,
+            product: data,
+            success: true,
+            isQRCode: isQRCode
+          });
+          setTimeout(() => setIsActive(true), 3000);
         },
         onError: () => {
           setIsActive(true);
@@ -111,7 +175,6 @@ export default function ScanHome({ navigation }) {
       });
     },
   });
-
 
   const toggleFlash = () => {
     setFlash(flash === 'off' ? 'on' : 'off');
@@ -153,7 +216,7 @@ export default function ScanHome({ navigation }) {
       <Header
         showBack
         title={"Scan Barcode"}
-        rightIcon={<UserCircle2 size={Responsive.width(24)} color="#333" strokeWidth={1.2} />}
+        // rightIcon={<UserCircle2 size={Responsive.width(24)} color="#333" strokeWidth={1.2} />}
         // eslint-disable-next-line react-native/no-inline-styles
         wrapperStyle={{
           backgroundColor: colors.background,
