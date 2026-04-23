@@ -26,13 +26,25 @@ export default function Favorites() {
           renderItem={renderHistoryItem}
           refreshControl={<RefreshControl onRefresh={handleRefresh} refreshing={isRefetching} />}
           keyExtractor={(item) => item?._id}
+          ListEmptyComponent={EmptyFavorites}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+
         />
       )}
     </>
   );
 }
+
+
+const EmptyFavorites = () => (
+  <View style={styles.emptyContainer}>
+    <Text style={styles.emptyTitle}>No Favorites Yet</Text>
+    <Text style={styles.emptySubtitle}>
+      Start adding items to your favorites and they will appear here
+    </Text>
+  </View>
+);
 
 const styles = StyleSheet.create({
   listContent: {
@@ -43,5 +55,26 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.large,
+    paddingVertical: Spacing.xLarge,
+    minHeight: 400,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.black,
+    marginBottom: Spacing.small,
+    textAlign: 'center',
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: colors.gray,
+    textAlign: 'center',
+    lineHeight: 20,
   }
 });

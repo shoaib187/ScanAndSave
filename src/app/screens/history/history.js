@@ -89,6 +89,7 @@ export default function History({ navigation }) {
             data={historyData}
             renderItem={renderHistoryItem}
             keyExtractor={(item) => item?._id}
+            ListEmptyComponent={EmptyFavorites}
             contentContainerStyle={styles.listContent}
             refreshControl={
               <RefreshControl onRefresh={handleRefresh} refreshing={isRefetching} />
@@ -108,6 +109,19 @@ export default function History({ navigation }) {
     </SafeAreaView>
   );
 }
+
+
+
+const EmptyFavorites = () => (
+  <View style={styles.emptyContainer}>
+    <Text style={styles.emptyTitle}>No Recent Scan</Text>
+    <Text style={styles.emptySubtitle}>
+      Start scanning items and they will appear here
+    </Text>
+  </View>
+);
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -185,5 +199,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.large,
+    paddingVertical: Spacing.xLarge,
+    minHeight: 400,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.black,
+    marginBottom: Spacing.small,
+    textAlign: 'center',
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: colors.gray,
+    textAlign: 'center',
+    lineHeight: 20,
   }
 });

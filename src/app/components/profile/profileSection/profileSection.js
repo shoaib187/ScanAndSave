@@ -50,10 +50,10 @@ export default function ProfileSection({ user }) {
   return (
     <View style={styles.profileSection}>
       <View style={styles.headerContainer}>
-        <Image
+        {/* <Image
           source={{ uri: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80' }}
           style={styles.bannerImage}
-        />
+        /> */}
         <TouchableOpacity
           style={styles.avatarWrapper}
           onPress={handlePickImage}
@@ -106,8 +106,8 @@ const styles = StyleSheet.create({
   },
 
   avatarWrapper: {
-    position: 'absolute',
-    bottom: -Spacing.large * 2,
+    // position: 'absolute',
+    // bottom: -Spacing.large * 2,
     borderWidth: 4,
     borderColor: colors.background,
     borderRadius: Radius.circle,
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
 
   userInfo: {
     alignItems: 'center',
-    marginTop: Spacing.xLarge * 1.8,
+    marginTop: Spacing.large,
   },
 
   userName: {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ToastAndroid } from 'react-native';
 // import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Radius, Spacing } from '../../../constants/styles';
 import { colors } from '../../../constants/colors';
@@ -47,7 +47,7 @@ export default function AuthForm() {
     const { email, password, full_name } = form;
 
     if (!email || !password || (!isLogin && !full_name)) {
-      Alert.alert("Error", "Please fill in all fields");
+      ToastAndroid.show("Please fill in all fields", 3000);
       return;
     }
 
@@ -68,8 +68,7 @@ export default function AuthForm() {
       await login(user, token);
 
     } catch (error) {
-      Alert.alert("Auth Failed", error.message || "Something went wrong");
-      console.log("Auth Error:", error);
+      ToastAndroid.show(error.message || "Something went wrong", 3000);
     } finally {
       setLoading(false);
     }

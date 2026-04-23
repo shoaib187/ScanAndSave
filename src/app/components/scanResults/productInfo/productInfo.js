@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Alert, TouchableOpacity, Share } from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, Share, ToastAndroid } from 'react-native';
 import React from 'react';
 import { Bookmark, Heart, Share2 } from 'lucide-react-native';
 import { colors } from '../../../../constants/colors';
@@ -18,10 +18,10 @@ export default function ProductInfo({ name, description, category, id, favorites
     if (isFavorited) {
       removeFromFavorites(id, {
         onSuccess: () => {
-          Alert.alert("Removed from Favorites", "This product has been removed from your favorites.");
+          ToastAndroid.show("This product has been removed from your favorites.", 3000);
         },
         onError: (error) => {
-          console.error('Remove from Favorites Error:', error);
+          ToastAndroid.show('Remove from Favorites Error:', 3000);
         },
       });
       return;
@@ -29,10 +29,10 @@ export default function ProductInfo({ name, description, category, id, favorites
     else {
       addToFavorites(id, {
         onSuccess: () => {
-          Alert.alert("Added to Favorites", "This product has been added to your favorites.");
+          ToastAndroid.show("This product has been added to your favorites.", 3000);
         },
         onError: (error) => {
-          console.error('Add to Favorites Error:', error);
+          ToastAndroid.show('Add to Favorites Error:', 3000);
         },
 
       });
